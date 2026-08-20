@@ -177,6 +177,14 @@ let S=load(), tick=null, tab="home", selected=STUDENTS[0], dragIndex=null;
 
 function render(){
  try{
+ // Firebase/구버전 데이터가 6교시까지만 있어도 화면이 멈추지 않게 즉시 보완
+ if(!Array.isArray(S.timetable)) S.timetable=[];
+ PERIODS.forEach((p,i)=>{
+   if(!S.timetable[i] || typeof S.timetable[i]!=="object"){
+     S.timetable[i]={subject:""};
+   }
+   if(S.timetable[i].subject==null) S.timetable[i].subject="";
+ });
  timerSync();
  document.getElementById("app").innerHTML=`
  <div class="head">
@@ -223,7 +231,7 @@ function homeView(){return `<div class="grid"><div>
  <div class="card"><h2>✅ 해야 할 일</h2><div class="todo">${S.todos.map((t,i)=>`<div class="todoitem"><input type="checkbox" ${t.done?"checked":""} onchange="S.todos[${i}].done=this.checked;save()"><span>${esc(t.text)}</span><button class="btn red" onclick="S.todos.splice(${i},1);save();render()">삭제</button></div>`).join("")}</div><div class="todoadd"><input class="input" id="todoInput" placeholder="할 일 추가"><button class="btn blue" onclick="addTodo()">추가</button></div></div>
  </div><div>
  <div class="card"><h2>⏱️ 타이머</h2><div class="timerlabel" id="teacherTimerLabel">${esc(S.timer.label)}</div><div class="timer" id="teacherTimerValue">${fmt(S.timer.remaining)}</div><div class="row"><button class="btn" onclick="preset(60,'독서시간')">1분</button><button class="btn" onclick="preset(300,'독서시간')">5분</button><button class="btn" onclick="preset(600,'쉬는시간')">10분</button><button class="btn" onclick="preset(900,'정리시간')">15분</button></div><div class="tinputs"><input id="tl" value="${esc(S.timer.label)}"><input id="tm" type="number" placeholder="분"><input id="ts" type="number" placeholder="초"></div><div class="row"><button class="btn blue" onclick="applyTimer()">설정</button><button class="btn green" onclick="startTimer()">시작</button><button class="btn" onclick="pauseTimer()">일시정지</button><button class="btn red" onclick="resetTimer()">초기화</button></div></div>
- <div class="card"><h2>📚 오늘 시간표</h2><div class="tt">${PERIODS.map((p,i)=>`<div class="ttrow"><b>${p.label}</b><input value="${esc(S.timetable[i].subject)}" onchange="S.timetable[${i}].subject=this.value;save()"><span class="tiny">${p.start}~${p.end}</span></div>`).join("")}</div></div>
+ <div class="card"><h2>📚 오늘 시간표</h2><div class="tt">${PERIODS.map((p,i)=>`<div class="ttrow"><b>${p.label}</b><input value="${esc(S.timetable?.[i]?.subject || "")}" onchange="if(!Array.isArray(S.timetable))S.timetable=[];if(!S.timetable[${i}])S.timetable[${i}]={subject:''};S.timetable[${i}].subject=this.value;save()"><span class="tiny">${p.start}~${p.end}</span></div>`).join("")}</div></div>
  <div class="card"><h2>📅 오늘 일정</h2><div class="events">${S.events.map((e,i)=>`<div class="eventrow"><input value="${esc(e.time||'')}" onchange="S.events[${i}].time=this.value;save()"><input value="${esc(e.text||'')}" onchange="S.events[${i}].text=this.value;save()"><button class="btn red" onclick="S.events.splice(${i},1);save();render()">삭제</button></div>`).join("")}</div><button class="btn blue" style="margin-top:7px" onclick="S.events.push({time:'',text:''});save();render()">+ 일정 추가</button></div>
  <div class="card"><h2>🎂 생일 등록</h2><div class="birthgrid">${STUDENTS.map(n=>`<div class="birthrow"><b>${n}</b><input value="${esc(S.birthdays[n]||'')}" placeholder="MM-DD" onchange="S.birthdays['${n}']=this.value.trim();save()"></div>`).join("")}</div></div>
  </div></div>`}
