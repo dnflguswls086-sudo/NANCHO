@@ -226,7 +226,7 @@ function render(){
  document.getElementById("app").innerHTML=`
  <div class="head">
   <div><h1>🧑‍🏫 ${esc(S.classConfig?.className||"난초반")} 만능 관리툴</h1><div class="sub">학생용 큰 화면 + 자리배치 + 1인1역 성실도 + 개인기록을 한곳에서 관리</div></div>
-  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.20.2 · 데이터 v3</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
+  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.21.1 · 데이터 v4</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
  </div>
  <div class="tabs">
   ${tabBtn("home","🏠 홈 컨트롤")}

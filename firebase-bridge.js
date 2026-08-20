@@ -14,8 +14,8 @@ import {
   이후 앱 파일이 바뀌어도 migrateState()에서 옛 데이터를 새 구조로
   보완한 뒤 사용하도록 설계합니다. 기존 필드는 삭제하지 않습니다.
 */
-export const APP_VERSION = "2026.08.20.2";
-export const DATA_VERSION = 3;
+export const APP_VERSION = "2026.08.21.1";
+export const DATA_VERSION = 4;
 
 const configured =
   firebaseConfig &&
@@ -32,6 +32,41 @@ const LEGACY_STUDENTS = [
   "이호진","정민준","정윤후","하이준","고서진","김리재","박나윤","박서은",
   "송윤하","이가빈","임엘린","정단우","정이현","조서윤","최인아","김나현"
 ];
+
+/*
+  난초반 번호순 원본 명단.
+  자리배치 순서(seats)와 학생 번호순(students)은 서로 완전히 분리합니다.
+*/
+const NANCHO_NUMBER_ORDER = [...LEGACY_STUDENTS];
+
+function sameNameSet(a,b){
+  if(!Array.isArray(a)||!Array.isArray(b)||a.length!==b.length)return false;
+  const sa=[...a].sort(), sb=[...b].sort();
+  return sa.every((x,i)=>x===sb[i]);
+}
+function reorderNanchoStudentsIfNeeded(state){
+  const className=String(state?.classConfig?.className||"난초반").trim();
+  if(className!=="난초반")return false;
+  if(!Array.isArray(state.students)||!state.students.length)return false;
+
+  const active=state.students.filter(s=>s?.active!==false);
+  const activeNames=active.map(s=>String(s?.name||"").trim()).filter(Boolean);
+
+  // 기존 난초반 24명과 정확히 같은 경우에만 번호순 복구.
+  if(!sameNameSet(activeNames,NANCHO_NUMBER_ORDER))return false;
+
+  const activeByName=new Map(active.map(s=>[String(s.name).trim(),s]));
+  const inactive=state.students.filter(s=>s?.active===false);
+  const next=[
+    ...NANCHO_NUMBER_ORDER.map(name=>activeByName.get(name)).filter(Boolean),
+    ...inactive
+  ];
+  const before=state.students.map(s=>s?.id||s?.name||"").join("|");
+  const after=next.map(s=>s?.id||s?.name||"").join("|");
+  state.students=next;
+  return before!==after;
+}
+
 const LEGACY_ROLES = [
   {name:"급식",count:4,emoji:"🍱"},{name:"뒷정리 도우미",count:2,emoji:"🧽"},
   {name:"시간표",count:1,emoji:"🗓️"},{name:"태블릿(고정자리)",count:2,emoji:"💻"},
@@ -199,6 +234,15 @@ export function migrateState(input){
     }
     v=3;changed=true;
   }
+
+  // v3 → v4 : 학생 번호순과 자리배치 순서를 완전히 분리
+  if(v < 4){
+    reorderNanchoStudentsIfNeeded(state);
+    v=4;changed=true;
+  }
+
+  // 과거 캐시에서 순서가 다시 섞여 들어오는 경우에도 안전 보정
+  if(reorderNanchoStudentsIfNeeded(state))changed=true;
 
   if(Number(state.dataVersion||0)!==DATA_VERSION){
     state.dataVersion=DATA_VERSION;changed=true;
