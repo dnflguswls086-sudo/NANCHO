@@ -14,8 +14,8 @@ import {
   이후 앱 파일이 바뀌어도 migrateState()에서 옛 데이터를 새 구조로
   보완한 뒤 사용하도록 설계합니다. 기존 필드는 삭제하지 않습니다.
 */
-export const APP_VERSION = "2026.08.20.1";
-export const DATA_VERSION = 2;
+export const APP_VERSION = "2026.08.20.2";
+export const DATA_VERSION = 3;
 
 const configured =
   firebaseConfig &&
@@ -32,6 +32,17 @@ const LEGACY_STUDENTS = [
   "이호진","정민준","정윤후","하이준","고서진","김리재","박나윤","박서은",
   "송윤하","이가빈","임엘린","정단우","정이현","조서윤","최인아","김나현"
 ];
+const LEGACY_ROLES = [
+  {name:"급식",count:4,emoji:"🍱"},{name:"뒷정리 도우미",count:2,emoji:"🧽"},
+  {name:"시간표",count:1,emoji:"🗓️"},{name:"태블릿(고정자리)",count:2,emoji:"💻"},
+  {name:"연필깎이",count:1,emoji:"✏️"},{name:"에어컨담당",count:1,emoji:"❄️"},
+  {name:"공기청정기",count:1,emoji:"🌿"},{name:"우유",count:2,emoji:"🥛"},
+  {name:"물티슈&휴지",count:1,emoji:"🧻"},{name:"경기어린이",count:2,emoji:"📰"},
+  {name:"칠판지우기",count:1,emoji:"🧹"},{name:"심부름",count:1,emoji:"📨"},
+  {name:"도서정리",count:1,emoji:"📚"},{name:"일반시민",count:2,emoji:"🙂"},
+  {name:"문집정리",count:2,emoji:"📘"}
+];
+
 
 // Firebase에 함께 보관할 데이터.
 // 새 필드를 추가할 때 여기에도 추가하면 업데이트 배포 시 그대로 동기화됩니다.
@@ -43,7 +54,7 @@ const CLOUD_FIELDS = [
   "warnings","logs","roleReviews",
 
   // 업데이트/학급 확장용 메타 데이터
-  "dataVersion","lastAppVersion","classConfig","students"
+  "dataVersion","lastAppVersion","classConfig","students","roles"
 ];
 
 function clone(v){
@@ -168,6 +179,25 @@ export function migrateState(input){
     }
 
     v=2;changed=true;
+  }
+
+
+  // v2 → v3 : 역할 설정을 데이터화하여 반마다 역할명/이모지/인원수 수정 가능
+  if(v < 3){
+    if(!Array.isArray(state.roles) || !state.roles.length){
+      state.roles=LEGACY_ROLES.map((r,i)=>({
+        id:`role-${String(i+1).padStart(3,"0")}`,
+        ...r
+      }));
+    }else{
+      state.roles=state.roles.map((r,i)=>({
+        id:r?.id||`role-${String(i+1).padStart(3,"0")}`,
+        name:String(r?.name||`역할 ${i+1}`),
+        count:Math.max(1,Number(r?.count||1)),
+        emoji:String(r?.emoji||"🌱")
+      }));
+    }
+    v=3;changed=true;
   }
 
   if(Number(state.dataVersion||0)!==DATA_VERSION){

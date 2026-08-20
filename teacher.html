@@ -32,10 +32,22 @@ h1{font:700 43px Gaegu,cursive;margin:0}.sub{font-size:12px;color:#7a8898}.actio
 /* overview */
 .ovgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rankrow,.warnrow,.reviewrank{display:flex;gap:8px;align-items:center;padding:8px;border-radius:11px;background:#f6f9fc;margin-bottom:6px}.num{width:25px;height:25px;border-radius:50%;background:#fff1b7;display:grid;place-items:center;font-weight:900}.score{margin-left:auto;font-weight:900}
 @media(max-width:1000px){.grid,.seatwrap,.personal,.ovgrid{grid-template-columns:1fr}.roles{grid-template-columns:repeat(2,1fr)}.tabs{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.roles,.birthgrid,.praisepeople,.statebuttons,.quick{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(2,1fr)}.seats{grid-template-columns:repeat(4,1fr)}}
+
+.settingsGrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:12px}
+.settingRow{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin:8px 0}
+.settingRow label{font-weight:900;color:#61758c}
+.rosterEdit,.roleEdit{display:grid;gap:7px}
+.studentEditRow{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:center;padding:7px;border-radius:12px;background:#f7fafd}
+.roleEditRow{display:grid;grid-template-columns:64px 1fr 84px auto;gap:8px;align-items:center;padding:7px;border-radius:12px;background:#f7fafd}
+.settingHint{font-size:12px;color:#718296;line-height:1.5}
+@media(max-width:900px){.settingsGrid{grid-template-columns:1fr}.roleEditRow{grid-template-columns:54px 1fr 70px auto}}
+
 </style></head><body><div class="wrap" id="app"></div>
 <script>
-const STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
-const ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+const DEFAULT_STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const DEFAULT_ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}].map((r,i)=>({...r,id:`role-${String(i+1).padStart(3,"0")}`}));
+let STUDENTS = [...DEFAULT_STUDENTS];
+let ROLES = DEFAULT_ROLES.map(r=>({...r}));
 const KEY = "nancho-dual-master-plus-v1";
 const PERIODS = [
  {label:"1교시",start:"08:40",end:"09:20"},
@@ -48,6 +60,9 @@ const PERIODS = [
 ];
 function fresh(){
  return {
+  classConfig:{schoolYear:2026,grade:5,className:"난초반"},
+  students:STUDENTS.map((name,i)=>({id:`student-${String(i+1).padStart(3,"0")}`,name,legacyName:name,active:true})),
+  roles:ROLES.map(r=>({...r})),
   seats:[...STUDENTS],
   roleAssignments:Object.fromEntries(ROLES.map((r,i)=>[i,Array.from({length:r.count},()=>({name:"",done:false}))])),
   points:Object.fromEntries(STUDENTS.map(n=>[n,0])),
@@ -73,8 +88,26 @@ function fresh(){
 function load(){
  try{
   const raw=localStorage.getItem(KEY); if(!raw) return fresh();
-  const x=JSON.parse(raw), b=fresh();
+  const x=JSON.parse(raw);
+  if(Array.isArray(x.students) && x.students.length){
+    const active=x.students.filter(s=>s?.active!==false).map(s=>String(s?.name||"").trim()).filter(Boolean);
+    if(active.length) STUDENTS=active;
+  }else if(Array.isArray(x.seats) && x.seats.length){
+    STUDENTS=[...new Set(x.seats.map(n=>String(n||"").trim()).filter(Boolean))];
+  }
+  if(Array.isArray(x.roles) && x.roles.length){
+    ROLES=x.roles.map((r,i)=>({
+      id:r?.id||`role-${String(i+1).padStart(3,"0")}`,
+      name:String(r?.name||`역할 ${i+1}`),
+      count:Math.max(1,Number(r?.count||1)),
+      emoji:String(r?.emoji||"🌱")
+    }));
+  }
+  const b=fresh();
   Object.assign(b,x);
+  b.classConfig={schoolYear:2026,grade:5,className:"난초반",...(x.classConfig||{})};
+  b.students=Array.isArray(x.students)&&x.students.length?x.students:b.students;
+  b.roles=Array.isArray(x.roles)&&x.roles.length?x.roles:ROLES.map(r=>({...r}));
   STUDENTS.forEach(n=>{
     b.points[n]=Number(x.points?.[n]||0);
     b.warnings[n]=Number(x.warnings?.[n]||0);
@@ -122,6 +155,8 @@ function saveLocalOnly(){
  try{localStorage.setItem(KEY+"-ping",String(Date.now()));}catch(e){}
 }
 function save(){
+ S.students=Array.isArray(S.students)?S.students:STUDENTS.map((name,i)=>({id:`student-${String(i+1).padStart(3,"0")}`,name,legacyName:name,active:true}));
+ S.roles=ROLES.map(r=>({...r}));
  saveLocalOnly();
  if(window.NanchoCloud?.enabled && window.NanchoCloud.saveState){
    window.NanchoCloud.saveState(S).catch(err=>console.error("Cloud save failed",err));
@@ -190,8 +225,8 @@ function render(){
  timerSync();
  document.getElementById("app").innerHTML=`
  <div class="head">
-  <div><h1>🧑‍🏫 난초반 만능 관리툴</h1><div class="sub">학생용 큰 화면 + 자리배치 + 1인1역 성실도 + 개인기록을 한곳에서 관리</div></div>
-  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.20.1 · 데이터 v2</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
+  <div><h1>🧑‍🏫 ${esc(S.classConfig?.className||"난초반")} 만능 관리툴</h1><div class="sub">학생용 큰 화면 + 자리배치 + 1인1역 성실도 + 개인기록을 한곳에서 관리</div></div>
+  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.20.2 · 데이터 v3</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
  </div>
  <div class="tabs">
   ${tabBtn("home","🏠 홈 컨트롤")}
@@ -199,6 +234,7 @@ function render(){
   ${tabBtn("roles","🌈 1인 1역")}
   ${tabBtn("personal","⭐ 개인관리")}
   ${tabBtn("overview","📊 한눈에 보기")}
+  ${tabBtn("settings","⚙️ 학급 설정")}
  </div>
  ${view()}`;
  }catch(err){
@@ -219,7 +255,7 @@ function repairTeacherData(){
  render();
 }
 function tabBtn(id,t){return `<button class="tab ${tab===id?'on':''}" onclick="tab='${id}';render()">${t}</button>`}
-function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():overviewView()}
+function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():tab==="overview"?overviewView():settingsView()}
 
 /* HOME */
 function homeView(){return `<div class="grid"><div>
@@ -301,6 +337,209 @@ function deleteRoleReview(n,i){
 /* OVERVIEW */
 function overviewView(){const ranks=[...STUDENTS].sort((a,b)=>S.points[b]-S.points[a]);const warns=[...STUDENTS].filter(n=>S.warnings[n]>0).sort((a,b)=>S.warnings[b]-S.warnings[a]);const rr=[...STUDENTS].map(n=>{const a=S.roleReviews[n]||[];return {n,c:a.length,avg:a.length?a.reduce((x,y)=>x+Number(y.value||0),0)/a.length:0}}).sort((a,b)=>b.avg-a.avg||b.c-a.c);return `<div class="ovgrid"><div class="card"><h2>🏆 개인 점수</h2>${ranks.map((n,i)=>`<div class="rankrow"><span class="num">${i+1}</span><b>${n}</b><span class="score">${S.points[n]}점</span></div>`).join("")}</div><div><div class="card"><h2>🌈 역할 성실도</h2>${rr.map((x,i)=>`<div class="reviewrank"><span class="num">${i+1}</span><b>${x.n}</b><span class="tiny">${x.c}회 평가</span><span class="score">${x.c?x.avg.toFixed(1):"-"} / 2</span></div>`).join("")}</div><div class="card"><h2>⚠️ 경고 현황</h2>${warns.length?warns.map(n=>`<div class="warnrow"><b>${n}</b><span class="score">${S.warnings[n]}회</span></div>`).join(""):"현재 경고 없음 🌸"}</div></div></div>`}
 
+
+/* SETTINGS */
+function settingsView(){
+ const activeStudents=(S.students||[]).filter(s=>s.active!==false);
+ return `<div class="settingsGrid">
+   <div>
+     <div class="card">
+       <h2>🏫 학급 기본 설정</h2>
+       <div class="settingRow"><label>학년도</label><input class="input" id="cfgYear" type="number" value="${Number(S.classConfig?.schoolYear||2026)}"></div>
+       <div class="settingRow"><label>학년</label><input class="input" id="cfgGrade" type="number" min="1" max="6" value="${Number(S.classConfig?.grade||5)}"></div>
+       <div class="settingRow"><label>반 이름</label><input class="input" id="cfgClass" value="${esc(S.classConfig?.className||"난초반")}"></div>
+       <div class="settingHint">예: 난초반, 장미반, 5-1 등. 교사용 화면 제목에도 반영됩니다.</div>
+       <div style="margin-top:10px"><button class="btn blue" onclick="saveClassBasics()">기본 설정 저장</button></div>
+     </div>
+
+     <div class="card">
+       <h2>🌈 1인 1역 설정</h2>
+       <div class="settingHint">역할명·이모지·인원수를 바꿀 수 있어요. 기존 역할은 같은 줄을 수정하면 배정 상태를 최대한 유지합니다.</div>
+       <div id="roleEdit" class="roleEdit" style="margin-top:10px">
+         ${ROLES.map((r,i)=>roleEditRow(r,i)).join("")}
+       </div>
+       <div class="actions" style="margin-top:10px">
+         <button class="btn" onclick="addRoleEditRow()">＋ 역할 추가</button>
+         <button class="btn blue" onclick="saveRoleSettings()">역할 설정 저장</button>
+       </div>
+     </div>
+   </div>
+
+   <div class="card">
+     <h2>👧🏻👦🏻 학생 명단 관리</h2>
+     <div class="settingHint">이름을 바꿔도 기존 점수·경고·생활기록·생일·자리·1인1역 기록을 새 이름으로 함께 옮깁니다. 삭제한 학생의 과거 기록은 데이터에 보관하고 현재 명단에서만 제외합니다.</div>
+     <div id="studentEdit" class="rosterEdit" style="margin-top:10px">
+       ${activeStudents.map((s,i)=>studentEditRow(s,i)).join("")}
+     </div>
+     <div class="actions" style="margin-top:10px">
+       <button class="btn" onclick="addStudentEditRow()">＋ 학생 추가</button>
+       <button class="btn green" onclick="saveStudentSettings()">학생 명단 저장</button>
+     </div>
+   </div>
+ </div>`;
+}
+function studentEditRow(s,i){
+ return `<div class="studentEditRow" data-id="${esc(s.id||"")}" data-old="${esc(s.name||"")}">
+   <b>${i+1}</b>
+   <input class="input studentNameEdit" value="${esc(s.name||"")}" placeholder="학생 이름">
+   <button class="btn red" onclick="this.closest('.studentEditRow').remove();renumberStudentRows()">삭제</button>
+ </div>`;
+}
+function renumberStudentRows(){
+ document.querySelectorAll("#studentEdit .studentEditRow").forEach((row,i)=>row.querySelector("b").textContent=i+1);
+}
+function addStudentEditRow(){
+ const box=document.getElementById("studentEdit");
+ const row=document.createElement("div");
+ row.className="studentEditRow";
+ row.dataset.id=`student-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+ row.dataset.old="";
+ row.innerHTML=`<b></b><input class="input studentNameEdit" placeholder="학생 이름"><button class="btn red" onclick="this.closest('.studentEditRow').remove();renumberStudentRows()">삭제</button>`;
+ box.appendChild(row);renumberStudentRows();
+}
+function saveClassBasics(){
+ S.classConfig=S.classConfig||{};
+ S.classConfig.schoolYear=Math.max(2000,Number(document.getElementById("cfgYear").value||2026));
+ S.classConfig.grade=Math.min(6,Math.max(1,Number(document.getElementById("cfgGrade").value||5)));
+ S.classConfig.className=document.getElementById("cfgClass").value.trim()||"우리반";
+ save();render();
+}
+function migrateName(oldName,newName){
+ if(!oldName || oldName===newName)return;
+ for(const key of ["points","warnings","logs","roleReviews","birthdays","studentPinHashes"]){
+   S[key]=S[key]||{};
+   if(Object.prototype.hasOwnProperty.call(S[key],oldName)){
+     if(!Object.prototype.hasOwnProperty.call(S[key],newName)) S[key][newName]=S[key][oldName];
+     delete S[key][oldName];
+   }
+ }
+ S.seats=(S.seats||[]).map(n=>n===oldName?newName:n);
+ Object.values(S.roleAssignments||{}).flat().forEach(x=>{if(x?.name===oldName)x.name=newName});
+ if(S.praise?.students)S.praise.students=S.praise.students.map(n=>n===oldName?newName:n);
+ if(Array.isArray(S.checkHistory))S.checkHistory.forEach(x=>{if(x?.student===oldName)x.student=newName});
+ if(selected===oldName)selected=newName;
+
+ // 같은 교사용 브라우저에 저장된 평문 PIN도 함께 이름 변경
+ try{
+   const pk="nancho-student-pin-plain-v1";
+   const plain=JSON.parse(localStorage.getItem(pk)||"{}");
+   if(Object.prototype.hasOwnProperty.call(plain,oldName)){
+     if(!Object.prototype.hasOwnProperty.call(plain,newName))plain[newName]=plain[oldName];
+     delete plain[oldName];
+     localStorage.setItem(pk,JSON.stringify(plain));
+   }
+ }catch(e){}
+}
+function saveStudentSettings(){
+ const rows=[...document.querySelectorAll("#studentEdit .studentEditRow")];
+ const entries=rows.map(row=>({
+   id:row.dataset.id||`student-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+   oldName:row.dataset.old||"",
+   name:row.querySelector(".studentNameEdit").value.trim()
+ })).filter(x=>x.name);
+
+ if(!entries.length){alert("학생을 한 명 이상 등록해 주세요.");return}
+ const names=entries.map(x=>x.name);
+ if(new Set(names).size!==names.length){alert("같은 이름이 두 번 들어가 있어요. 이름을 다르게 입력해 주세요.");return}
+
+ const oldAll=Array.isArray(S.students)?S.students:[];
+ const byId=Object.fromEntries(oldAll.map(s=>[s.id,s]));
+ const newStudents=[];
+
+ entries.forEach(e=>{
+   const prior=byId[e.id];
+   const oldName=prior?.name||e.oldName;
+   if(oldName && oldName!==e.name)migrateName(oldName,e.name);
+   newStudents.push({
+     ...(prior||{}),
+     id:e.id,
+     name:e.name,
+     legacyName:prior?.legacyName||oldName||e.name,
+     active:true
+   });
+
+   S.points=S.points||{}; if(S.points[e.name]==null)S.points[e.name]=0;
+   S.warnings=S.warnings||{}; if(S.warnings[e.name]==null)S.warnings[e.name]=0;
+   S.logs=S.logs||{}; if(!Array.isArray(S.logs[e.name]))S.logs[e.name]=[];
+   S.roleReviews=S.roleReviews||{}; if(!Array.isArray(S.roleReviews[e.name]))S.roleReviews[e.name]=[];
+   S.birthdays=S.birthdays||{}; if(S.birthdays[e.name]==null)S.birthdays[e.name]="";
+ });
+
+ const activeIds=new Set(newStudents.map(s=>s.id));
+ oldAll.filter(s=>!activeIds.has(s.id)).forEach(s=>newStudents.push({...s,active:false}));
+
+ S.students=newStudents;
+ STUDENTS=entries.map(e=>e.name);
+
+ // 현재 명단에 없는 학생은 현재 좌석/역할에서만 제거
+ S.seats=(S.seats||[]).filter(n=>STUDENTS.includes(n));
+ STUDENTS.forEach(n=>{if(!S.seats.includes(n))S.seats.push(n)});
+ Object.values(S.roleAssignments||{}).flat().forEach(x=>{
+   if(x?.name && !STUDENTS.includes(x.name)){x.name="";x.done=false}
+ });
+ if(S.praise?.students)S.praise.students=S.praise.students.filter(n=>STUDENTS.includes(n));
+ if(!STUDENTS.includes(selected))selected=STUDENTS[0];
+
+ save();render();
+ alert(`학생 명단 ${STUDENTS.length}명 저장 완료!`);
+}
+function roleEditRow(r,i){
+ return `<div class="roleEditRow" data-id="${esc(r.id||`role-${i+1}`)}" data-oldname="${esc(r.name||"")}">
+   <input class="input roleEmojiEdit" value="${esc(r.emoji||"🌱")}" maxlength="4" title="이모지">
+   <input class="input roleNameEdit" value="${esc(r.name||"")}" placeholder="역할 이름">
+   <input class="input roleCountEdit" type="number" min="1" max="24" value="${Number(r.count||1)}" title="인원수">
+   <button class="btn red" onclick="this.closest('.roleEditRow').remove()">삭제</button>
+ </div>`;
+}
+function addRoleEditRow(){
+ const box=document.getElementById("roleEdit"),row=document.createElement("div");
+ row.className="roleEditRow";
+ row.dataset.id=`role-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+ row.dataset.oldname="";
+ row.innerHTML=`<input class="input roleEmojiEdit" value="🌱" maxlength="4"><input class="input roleNameEdit" placeholder="역할 이름"><input class="input roleCountEdit" type="number" min="1" max="24" value="1"><button class="btn red" onclick="this.closest('.roleEditRow').remove()">삭제</button>`;
+ box.appendChild(row);
+}
+function saveRoleSettings(){
+ const rows=[...document.querySelectorAll("#roleEdit .roleEditRow")];
+ const defs=rows.map(row=>({
+   id:row.dataset.id,
+   oldName:row.dataset.oldname||"",
+   emoji:row.querySelector(".roleEmojiEdit").value.trim()||"🌱",
+   name:row.querySelector(".roleNameEdit").value.trim(),
+   count:Math.max(1,Math.min(24,Number(row.querySelector(".roleCountEdit").value||1)))
+ })).filter(r=>r.name);
+
+ if(!defs.length){alert("역할을 한 개 이상 남겨 주세요.");return}
+ if(new Set(defs.map(r=>r.name)).size!==defs.length){alert("같은 역할 이름이 두 번 있어요.");return}
+
+ const oldRoles=ROLES.map(r=>({...r}));
+ const oldAssign=S.roleAssignments||{};
+ const newAssign={};
+
+ defs.forEach((r,newIndex)=>{
+   const oldIndex=oldRoles.findIndex(x=>x.id===r.id);
+   const src=oldIndex>=0 && Array.isArray(oldAssign[oldIndex])?oldAssign[oldIndex]:[];
+   newAssign[newIndex]=Array.from({length:r.count},(_,j)=>{
+     const it=src[j];
+     return it?{name:String(it.name||""),done:!!it.done}:{name:"",done:false};
+   });
+
+   // 같은 역할의 이름만 바꾼 경우 과거 역할평가의 역할명도 함께 변경
+   const prior=oldIndex>=0?oldRoles[oldIndex]:null;
+   if(prior && prior.name!==r.name){
+     Object.values(S.roleReviews||{}).forEach(arr=>{
+       if(Array.isArray(arr))arr.forEach(rv=>{if(rv?.role===prior.name)rv.role=r.name});
+     });
+   }
+ });
+
+ ROLES=defs.map(({oldName,...r})=>r);
+ S.roles=ROLES.map(r=>({...r}));
+ S.roleAssignments=newAssign;
+ save();render();
+ alert("1인 1역 설정 저장 완료!");
+}
+
 /* HOME helpers */
 function togglePraise(n){const i=S.praise.students.indexOf(n);if(i>=0)S.praise.students.splice(i,1);else S.praise.students.push(n);save();render()}
 function addTodo(){const e=document.getElementById("todoInput"),v=(e.value||"").trim();if(!v)return;S.todos.push({text:v,done:false});save();render()}
@@ -310,7 +549,7 @@ function startTimer(){timerSync();if(S.timer.remaining<=0)S.timer.remaining=S.ti
 function pauseTimer(){timerSync();S.timer.running=false;S.timer.lastTick=null;save();render()}
 function resetTimer(){S.timer.running=false;S.timer.lastTick=null;S.timer.remaining=S.timer.duration;save();render()}
 function openDisplay(){window.open('display.html','nanchoDisplay')}
-function backup(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='난초반_만능툴_COMPLETE_백업.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function backup(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`${S.classConfig?.className||'우리반'}_만능툴_백업.json`;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 
 window.addEventListener("storage",(e)=>{if(e.key===KEY||e.key===KEY+"-ping"){S=load();render()}});
 window.addEventListener("nancho-cloud-update",()=>{

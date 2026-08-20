@@ -190,8 +190,10 @@ h2{
 }
 </style></head><body><div class="wrap" id="app"></div>
 <script>
-const STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
-const ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+const DEFAULT_STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const DEFAULT_ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+let STUDENTS=[...DEFAULT_STUDENTS];
+let ROLES=DEFAULT_ROLES.map(r=>({...r}));
 const KEY = "nancho-dual-master-plus-v1";
 const PERIODS = [
  {label:"1교시",start:"08:40",end:"09:20"},
@@ -204,6 +206,9 @@ const PERIODS = [
 ];
 function fresh(){
  return {
+  classConfig:{schoolYear:2026,grade:5,className:"난초반"},
+  students:STUDENTS.map((name,i)=>({id:`student-${String(i+1).padStart(3,"0")}`,name,active:true})),
+  roles:ROLES.map(r=>({...r})),
   seats:[...STUDENTS],
   roleAssignments:Object.fromEntries(ROLES.map((r,i)=>[i,Array.from({length:r.count},()=>({name:"",done:false}))])),
   points:Object.fromEntries(STUDENTS.map(n=>[n,0])),
@@ -229,7 +234,17 @@ function fresh(){
 function load(){
  try{
   const raw=localStorage.getItem(KEY); if(!raw) return fresh();
-  const x=JSON.parse(raw), b=fresh();
+  const x=JSON.parse(raw);
+  if(Array.isArray(x.students)&&x.students.length){
+    const active=x.students.filter(s=>s?.active!==false).map(s=>String(s?.name||"").trim()).filter(Boolean);
+    if(active.length)STUDENTS=active;
+  }else if(Array.isArray(x.seats)&&x.seats.length){
+    STUDENTS=[...new Set(x.seats.map(n=>String(n||"").trim()).filter(Boolean))];
+  }
+  if(Array.isArray(x.roles)&&x.roles.length){
+    ROLES=x.roles.map((r,i)=>({id:r?.id||`role-${i+1}`,name:String(r?.name||`역할 ${i+1}`),count:Math.max(1,Number(r?.count||1)),emoji:String(r?.emoji||"🌱")}));
+  }
+  const b=fresh();
   Object.assign(b,x);
   STUDENTS.forEach(n=>{
     b.points[n]=Number(x.points?.[n]||0);
@@ -313,7 +328,7 @@ function render(){
  document.getElementById("app").innerHTML=`
  <div class="top">
    <div class="heroTitle">
-     <div class="title">🌸 ${esc(S.titleText||"난초반 오늘")}</div>
+     <div class="title">🌸 ${esc(S.titleText||`${S.classConfig?.className||"우리반"} 오늘`)}</div>
      <div class="subtitle">
        <span class="pill state">🚦 ${esc(S.classState||"쉬는시간 🧸")}</span>
        ${bdays.length?`<span class="pill birthday">🎂 오늘 생일: ${bdays.map(esc).join(", ")}</span>`:''}

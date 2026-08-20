@@ -19,7 +19,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/fireba
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-const STUDENTS=["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const DEFAULT_STUDENTS=["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+let STUDENTS=[...DEFAULT_STUDENTS];
 const PLAIN_KEY="nancho-student-pin-plain-v1";
 const grid=document.getElementById("grid"), status=document.getElementById("status");
 let plain={}; try{plain=JSON.parse(localStorage.getItem(PLAIN_KEY)||"{}")}catch(e){}
@@ -35,10 +36,20 @@ async function sha256(s){
  const h=await crypto.subtle.digest("SHA-256",b);
  return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");
 }
-render();
-
 if(String(firebaseConfig.apiKey).includes("PASTE_")){status.textContent="⚠️ firebase-config.js를 먼저 설정하세요.";throw new Error("Firebase not configured")}
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);await signInAnonymously(auth);const ref=doc(db,"classes",CLASS_ID);status.textContent="☁️ Firebase 연결됨";
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+await signInAnonymously(auth);
+const ref=doc(db,"classes",CLASS_ID);
+const firstSnap=await getDoc(ref);
+if(firstSnap.exists()){
+ const state=firstSnap.data().state||{};
+ if(Array.isArray(state.students)&&state.students.length){
+   const active=state.students.filter(s=>s?.active!==false).map(s=>String(s?.name||"").trim()).filter(Boolean);
+   if(active.length)STUDENTS=active;
+ }
+}
+status.textContent=`☁️ Firebase 연결됨 · 학생 ${STUDENTS.length}명`;
+render();
 
 document.getElementById("generate").onclick=()=>{
  plain={};STUDENTS.forEach(n=>plain[n]=String(Math.floor(1000+Math.random()*9000)));
@@ -46,7 +57,7 @@ document.getElementById("generate").onclick=()=>{
 };
 document.getElementById("save").onclick=async()=>{
  plain=collect();
- if(Object.keys(plain).length!==STUDENTS.length){alert("24명 모두 4자리 PIN을 입력해 주세요.");return}
+ if(Object.keys(plain).length!==STUDENTS.length){alert(`${STUDENTS.length}명 모두 4자리 PIN을 입력해 주세요.`);return}
  localStorage.setItem(PLAIN_KEY,JSON.stringify(plain));
  const hashes={};for(const n of STUDENTS)hashes[n]=await sha256(plain[n]);
  const snap=await getDoc(ref);const data=snap.exists()?snap.data():{};const state=data.state||{};

@@ -30,8 +30,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/fireba
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-const STUDENTS=["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
-const ROLES=[{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+const DEFAULT_STUDENTS=["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const DEFAULT_ROLES=[{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+let STUDENTS=[...DEFAULT_STUDENTS];
+let ROLES=DEFAULT_ROLES.map(r=>({...r}));
 let STATE=null, selected=null, attempts={}, lockUntil={};
 const grid=document.getElementById("grid"),overlay=document.getElementById("overlay"),modal=document.getElementById("modal"),status=document.getElementById("status");
 
@@ -88,7 +90,15 @@ async function completeRole(n){
 }
 if(String(firebaseConfig.apiKey).includes("PASTE_")){status.textContent="⚠️ Firebase 설정이 필요합니다.";throw new Error("Firebase not configured")}
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);await signInAnonymously(auth);const ref=doc(db,"classes",CLASS_ID);
-onSnapshot(ref,snap=>{if(!snap.exists()){status.textContent="선생님 화면에서 Firebase 데이터를 먼저 만들어 주세요.";return}STATE=snap.data().state||{};status.textContent="☁️ 실시간 연결됨 · 자기 이름을 눌러주세요";render()},err=>{console.error(err);status.textContent="⚠️ Firebase 연결 오류"});
+onSnapshot(ref,snap=>{if(!snap.exists()){status.textContent="선생님 화면에서 Firebase 데이터를 먼저 만들어 주세요.";return}STATE=snap.data().state||{};
+if(Array.isArray(STATE.students)&&STATE.students.length){
+  const active=STATE.students.filter(s=>s?.active!==false).map(s=>String(s?.name||"").trim()).filter(Boolean);
+  if(active.length)STUDENTS=active;
+}
+if(Array.isArray(STATE.roles)&&STATE.roles.length){
+  ROLES=STATE.roles.map((r,i)=>({id:r?.id||`role-${i+1}`,name:String(r?.name||`역할 ${i+1}`),count:Math.max(1,Number(r?.count||1)),emoji:String(r?.emoji||"🌱")}));
+}
+status.textContent="☁️ 실시간 연결됨 · 자기 이름을 눌러주세요";render()},err=>{console.error(err);status.textContent="⚠️ Firebase 연결 오류"});
 overlay.onclick=e=>{if(e.target===overlay)close()};
 </script>
 <script>
