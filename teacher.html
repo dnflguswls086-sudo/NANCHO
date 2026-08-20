@@ -1,0 +1,250 @@
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>난초반 교사용 COMPLETE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap');
+*{box-sizing:border-box}body{margin:0;background:#eef6ff;color:#33455a;font-family:"Gowun Dodum",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}
+.wrap{max-width:1500px;margin:auto;padding:14px}.head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;background:#fff;padding:15px 18px;border-radius:22px;box-shadow:0 10px 30px rgba(44,72,110,.12)}
+h1{font:700 43px Gaegu,cursive;margin:0}.sub{font-size:12px;color:#7a8898}.actions,.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 12px;border-radius:11px;background:#e9f0f8;color:#50647b;font-weight:900}.blue{background:#6f9ee8;color:#fff}.green{background:#5cb87a;color:#fff}.pink{background:#e99abd;color:#fff}.orange{background:#ecaa70;color:#fff}.red{background:#e97570;color:#fff}.purple{background:#9378d8;color:#fff}.yellow{background:#ffd766;color:#654f00}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0}.tab{padding:12px;border-radius:14px;background:#fff;box-shadow:0 6px 16px rgba(44,72,110,.09);font:700 21px Gaegu,cursive}.tab.on{background:#6f9ee8;color:#fff}
+.card{background:#fff;border-radius:20px;padding:14px;box-shadow:0 10px 25px rgba(44,72,110,.1);margin-bottom:12px}h2{font:700 28px Gaegu,cursive;margin:0 0 10px}h3{font:700 22px Gaegu,cursive;margin:0 0 8px}
+.grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px}.bigarea{width:100%;min-height:120px;border:1px solid #d9e3ec;border-radius:14px;padding:12px;resize:vertical}.lunch{background:#fff8e6}
+.statebuttons{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.statebuttons button{padding:11px;border-radius:11px;background:#f3f6fa;font-weight:900}.statebuttons button.active{background:#fff1b7;outline:2px solid #f0c84c}
+.timer{font:700 68px Gaegu,cursive;text-align:center;color:#4d6d91}.timerlabel{font:700 26px Gaegu,cursive;text-align:center}.tinputs{display:grid;grid-template-columns:1fr 90px 90px;gap:7px;margin:10px 0}.tinputs input,.input{padding:9px;border:1px solid #d9e3ec;border-radius:10px;width:100%}
+.todo{display:grid;gap:7px}.todoitem{display:grid;grid-template-columns:auto 1fr auto;gap:7px;align-items:center;padding:8px;background:#f6f9fc;border-radius:11px}.todoadd{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}
+.tt{display:grid;gap:6px}.ttrow{display:grid;grid-template-columns:65px 1fr 95px;gap:7px;align-items:center}.ttrow input{padding:8px;border:1px solid #d9e3ec;border-radius:10px}.tiny{font-size:11px;color:#7d8b9b}
+.birthgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:360px;overflow:auto}.birthrow{display:grid;grid-template-columns:1fr 82px;gap:6px;align-items:center;padding:7px;border-radius:10px;background:#f7f9fc}.birthrow input{padding:7px;border:1px solid #d9e3ec;border-radius:9px}
+.praisepeople{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:200px;overflow:auto}.personpick{padding:7px;border-radius:9px;background:#f6f8fb;border:1px solid #e0e6ed}.personpick.on{background:#fff2b8;border-color:#e7cc63}
+.events{display:grid;gap:7px}.eventrow{display:grid;grid-template-columns:100px 1fr auto;gap:7px}.eventrow input{padding:8px;border:1px solid #d9e3ec;border-radius:10px}
+
+/* seats */
+.seatwrap{display:grid;grid-template-columns:1fr 260px;gap:12px}.classroom{background:#f8fbff;border:2px solid #dbe6ef;border-radius:18px;padding:13px}.board{width:70%;margin:0 auto 14px;background:#355b50;color:#fff;text-align:center;padding:9px;border-radius:11px;font:700 20px Gaegu,cursive}.seats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.seat{min-height:90px;border:2px solid #dce5ed;border-radius:14px;background:#fff;display:grid;place-items:center;text-align:center;padding:6px;cursor:grab}.seat .name{font:700 21px Gaegu,cursive}.seat .meta{font-size:9px;color:#75859a}.seat.over{outline:3px dashed #6f9ee8}
+
+/* roles */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.role{padding:10px;border:1px solid #e1e8ef;border-radius:14px}.rtitle{font:700 20px Gaegu,cursive}.rrow{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:5px}.rrow select{padding:7px;border:1px solid #dce5ed;border-radius:9px}.done{padding:7px;border-radius:9px;background:#edf3f9;font-size:11px}.done.on{background:#e8f8ed;color:#378457}
+.reviewrow{display:grid;grid-template-columns:1fr repeat(3,auto);gap:5px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed #e4e9ef}.reviewname{font-size:11px;font-weight:900}.rv{padding:5px 7px;border-radius:8px;font-size:10px}.great{background:#fff2b7}.good{background:#e7f8ec}.poor{background:#fff0ed}
+
+/* personal */
+.personal{display:grid;grid-template-columns:270px 1fr;gap:12px}.studentlist{display:grid;gap:6px;max-height:660px;overflow:auto}.srow{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:11px;background:#f6f9fc;cursor:pointer}.srow.on{background:#eaf3ff;outline:2px solid #8cb2e8}.sname{font:700 19px Gaegu,cursive}.profile{border:1px solid #e1e8ef;border-radius:18px;padding:15px}.phead{font:700 31px Gaegu,cursive}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.stat{background:#f6f9fc;border-radius:12px;padding:10px;text-align:center}.stat b{display:block;font:700 25px Gaegu,cursive}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.noteadd{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:10px}.history{margin-top:10px;padding:10px;background:#f7f9fb;border-radius:12px;max-height:250px;overflow:auto;font-size:11px;line-height:1.65}
+.reviewhistory{margin-top:10px;padding:10px;background:#fffaf0;border-radius:12px;max-height:220px;overflow:auto;font-size:11px;line-height:1.65}
+
+/* overview */
+.ovgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rankrow,.warnrow,.reviewrank{display:flex;gap:8px;align-items:center;padding:8px;border-radius:11px;background:#f6f9fc;margin-bottom:6px}.num{width:25px;height:25px;border-radius:50%;background:#fff1b7;display:grid;place-items:center;font-weight:900}.score{margin-left:auto;font-weight:900}
+@media(max-width:1000px){.grid,.seatwrap,.personal,.ovgrid{grid-template-columns:1fr}.roles{grid-template-columns:repeat(2,1fr)}.tabs{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.roles,.birthgrid,.praisepeople,.statebuttons,.quick{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(2,1fr)}.seats{grid-template-columns:repeat(4,1fr)}}
+</style></head><body><div class="wrap" id="app"></div>
+<script>
+const STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+const KEY = "nancho-dual-master-plus-v1";
+const PERIODS = [
+ {label:"1교시",start:"08:40",end:"09:20"},
+ {label:"2교시",start:"09:30",end:"10:10"},
+ {label:"3교시",start:"10:20",end:"11:00"},
+ {label:"4교시",start:"11:10",end:"11:50"},
+ {label:"5교시",start:"12:00",end:"12:40"},
+ {label:"6교시",start:"13:30",end:"14:10"},
+ {label:"7교시",start:"14:20",end:"15:00"}
+];
+function fresh(){
+ return {
+  seats:[...STUDENTS],
+  roleAssignments:Object.fromEntries(ROLES.map((r,i)=>[i,Array.from({length:r.count},()=>({name:"",done:false}))])),
+  points:Object.fromEntries(STUDENTS.map(n=>[n,0])),
+  warnings:Object.fromEntries(STUDENTS.map(n=>[n,0])),
+  logs:Object.fromEntries(STUDENTS.map(n=>[n,[]])),
+  roleReviews:Object.fromEntries(STUDENTS.map(n=>[n,[]])),
+  studentPinHashes:{},
+  checkHistory:[],
+  birthdays:Object.fromEntries(STUDENTS.map(n=>[n,""])),
+  morningNotice:"좋은 아침이에요!\\n가방 정리와 숙제 제출부터 시작해요 ☀️",
+  lunch:"오늘의 급식을 입력해 주세요 🍱",
+  lunchPromise:"모둠원들과만 이야기할 수 있어요 🤝",
+  announcement:"오늘도 즐겁게 생활해요!\\n다음 시간 준비물을 꼭 확인하세요 🌸",
+  lifeBookText:"생활본 작성할 친구는 쉬는시간에 차분히 적어주세요 ✏️",
+  praise:{students:[],message:""},
+  classState:"쉬는시간 🧸",
+  events:[],
+  todos:[{text:"아침 숙제 제출하기",done:false},{text:"다음 수업 준비물 챙기기",done:false}],
+  timetable:PERIODS.map((p,i)=>({subject:["국어","수학","과학","사회","음악","체육","창체"][i]||""})),
+  timer:{label:"쉬는시간",duration:600,remaining:600,running:false,lastTick:null}
+ };
+}
+function load(){
+ try{
+  const raw=localStorage.getItem(KEY); if(!raw) return fresh();
+  const x=JSON.parse(raw), b=fresh();
+  Object.assign(b,x);
+  STUDENTS.forEach(n=>{
+    b.points[n]=Number(x.points?.[n]||0);
+    b.warnings[n]=Number(x.warnings?.[n]||0);
+    b.logs[n]=Array.isArray(x.logs?.[n])?x.logs[n]:[];
+    b.roleReviews[n]=Array.isArray(x.roleReviews?.[n])?x.roleReviews[n]:[];
+    b.birthdays[n]=String(x.birthdays?.[n]||"");
+  });
+  ROLES.forEach((r,i)=>{
+    if(Array.isArray(x.roleAssignments?.[i])){
+      b.roleAssignments[i]=Array.from({length:r.count},(_,j)=>{
+        const it=x.roleAssignments[i][j];
+        if(it && typeof it==="object") return {name:String(it.name||""),done:!!it.done};
+        return {name:String(it||""),done:false};
+      });
+    }
+  });
+  if(!b.titleText) b.titleText="난초반 오늘";
+  if(!b.praise || typeof b.praise!=="object") b.praise={students:[],message:""};
+  if(!Array.isArray(b.praise.students)) b.praise.students=[];
+  if(!Array.isArray(b.events)) b.events=[];
+  return b;
+ }catch(e){return fresh()}
+}
+function saveLocalOnly(){
+ localStorage.setItem(KEY,JSON.stringify(S));
+ try{localStorage.setItem(KEY+"-ping",String(Date.now()));}catch(e){}
+}
+function save(){
+ saveLocalOnly();
+ if(window.NanchoCloud?.enabled && window.NanchoCloud.saveState){
+   window.NanchoCloud.saveState(S).catch(err=>console.error("Cloud save failed",err));
+ }
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function roleOf(n){for(let i=0;i<ROLES.length;i++) if(S.roleAssignments[i].some(x=>x.name===n)) return ROLES[i].name; return "미배정";}
+function roleAssigned(){return Object.values(S.roleAssignments).flat().map(x=>x.name).filter(Boolean).length;}
+function roleDone(){return Object.values(S.roleAssignments).flat().filter(x=>x.done).length;}
+function fmt(sec){sec=Math.max(0,Math.floor(sec||0));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;}
+function timerSync(){
+ if(S.timer.running && S.timer.lastTick){
+  const diff=Math.floor((Date.now()-S.timer.lastTick)/1000);
+  if(diff>0){
+    S.timer.remaining=Math.max(0,S.timer.remaining-diff);
+    S.timer.lastTick=Date.now();
+    if(S.timer.remaining<=0){S.timer.running=false;S.timer.remaining=0;}
+    saveLocalOnly();
+  }
+ }
+}
+function hm(hm){const [h,m]=hm.split(":").map(Number);return h*60+m;}
+function periodStatus(){
+ const d=new Date(), now=d.getHours()*60+d.getMinutes();
+ const lunchStart=12*60+30, lunchEnd=13*60+20;
+ if(now>=lunchStart && now<=lunchEnd){
+   return {
+     current:{type:"lunch",label:"점심시간",start:"12:30",end:"13:20",subject:"점심시간"},
+     next:{index:5,label:"6교시",start:"13:30",end:"14:10",subject:S.timetable?.[5]?.subject||""}
+   };
+ }
+ let current=null,next=null;
+ PERIODS.forEach((p,i)=>{
+  if(now>=hm(p.start)&&now<=hm(p.end)) current={index:i,...p,subject:S.timetable?.[i]?.subject||""};
+  if(!next && now<hm(p.start)) next={index:i,...p,subject:S.timetable?.[i]?.subject||""};
+ });
+ if(!next && current && PERIODS[current.index+1]){
+   const i=current.index+1;
+   next={index:i,...PERIODS[i],subject:S.timetable?.[i]?.subject||""};
+ }
+ return {current,next};
+}
+function todayBirthdays(){
+ const d=new Date(), md=`${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+ return STUDENTS.filter(n=>S.birthdays[n]===md);
+}
+function monthBirthdays(){
+ const d=new Date(), mm=String(d.getMonth()+1).padStart(2,"0");
+ return STUDENTS.filter(n=>String(S.birthdays[n]||"").startsWith(mm+"-"))
+   .sort((a,b)=>S.birthdays[a].localeCompare(S.birthdays[b]));
+}
+let S=load(), tick=null, tab="home", selected=STUDENTS[0], dragIndex=null;
+
+function render(){
+ timerSync();
+ document.getElementById("app").innerHTML=`
+ <div class="head">
+  <div><h1>🧑‍🏫 난초반 만능 관리툴</h1><div class="sub">학생용 큰 화면 + 자리배치 + 1인1역 성실도 + 개인기록을 한곳에서 관리</div></div>
+  <div class="actions"><span id="cloudStatus" class="btn">☁️ 연결 확인 중</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
+ </div>
+ <div class="tabs">
+  ${tabBtn("home","🏠 홈 컨트롤")}
+  ${tabBtn("seats","🪑 자리배치")}
+  ${tabBtn("roles","🌈 1인 1역")}
+  ${tabBtn("personal","⭐ 개인관리")}
+  ${tabBtn("overview","📊 한눈에 보기")}
+ </div>
+ ${view()}`;
+}
+function tabBtn(id,t){return `<button class="tab ${tab===id?'on':''}" onclick="tab='${id}';render()">${t}</button>`}
+function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():overviewView()}
+
+/* HOME */
+function homeView(){return `<div class="grid"><div>
+ <div class="card"><h2>🏷️ 학생용 상단 제목</h2><input class="input" id="titleTextInput" value="${esc(S.titleText||"난초반 오늘")}"><div style="margin-top:7px"><button class="btn blue" onclick="S.titleText=document.getElementById('titleTextInput').value.trim()||'난초반 오늘';save()">저장</button></div></div>
+ <div class="card"><h2>🚦 현재 상태</h2><div class="statebuttons">${["아침 준비 ☀️","수업 준비 📚","쉬는시간 🧸","정리시간 🧹","급식시간 🍱","이동 준비 🚶","조용히 활동 🤫","하교 준비 🎒"].map(x=>`<button class="${S.classState===x?'active':''}" onclick="S.classState='${x}';save();render()">${x}</button>`).join("")}</div></div>
+ ${textCard("📢 안내사항","announcement",S.announcement,"")}
+ ${textCard("🍱 오늘의 급식","lunch",S.lunch,"lunch")}
+ ${textCard("🤝 점심시간 약속","lunchPromise",S.lunchPromise,"")}
+ ${textCard("📝 생활본 작성","lifeBookText",S.lifeBookText,"")}
+ <div class="card"><h2>🌟 오늘의 칭찬</h2><textarea class="bigarea" id="praiseMessage">${esc(S.praise.message||"")}</textarea><div class="praisepeople">${STUDENTS.map(n=>`<button class="personpick ${S.praise.students.includes(n)?'on':''}" onclick="togglePraise('${n}')">${n}</button>`).join("")}</div><div style="margin-top:7px"><button class="btn blue" onclick="S.praise.message=document.getElementById('praiseMessage').value;save()">저장</button></div></div>
+ <div class="card"><h2>✅ 해야 할 일</h2><div class="todo">${S.todos.map((t,i)=>`<div class="todoitem"><input type="checkbox" ${t.done?"checked":""} onchange="S.todos[${i}].done=this.checked;save()"><span>${esc(t.text)}</span><button class="btn red" onclick="S.todos.splice(${i},1);save();render()">삭제</button></div>`).join("")}</div><div class="todoadd"><input class="input" id="todoInput" placeholder="할 일 추가"><button class="btn blue" onclick="addTodo()">추가</button></div></div>
+ </div><div>
+ <div class="card"><h2>⏱️ 타이머</h2><div class="timerlabel" id="teacherTimerLabel">${esc(S.timer.label)}</div><div class="timer" id="teacherTimerValue">${fmt(S.timer.remaining)}</div><div class="row"><button class="btn" onclick="preset(60,'독서시간')">1분</button><button class="btn" onclick="preset(300,'독서시간')">5분</button><button class="btn" onclick="preset(600,'쉬는시간')">10분</button><button class="btn" onclick="preset(900,'정리시간')">15분</button></div><div class="tinputs"><input id="tl" value="${esc(S.timer.label)}"><input id="tm" type="number" placeholder="분"><input id="ts" type="number" placeholder="초"></div><div class="row"><button class="btn blue" onclick="applyTimer()">설정</button><button class="btn green" onclick="startTimer()">시작</button><button class="btn" onclick="pauseTimer()">일시정지</button><button class="btn red" onclick="resetTimer()">초기화</button></div></div>
+ <div class="card"><h2>📚 오늘 시간표</h2><div class="tt">${PERIODS.map((p,i)=>`<div class="ttrow"><b>${p.label}</b><input value="${esc(S.timetable[i].subject)}" onchange="S.timetable[${i}].subject=this.value;save()"><span class="tiny">${p.start}~${p.end}</span></div>`).join("")}</div></div>
+ <div class="card"><h2>📅 오늘 일정</h2><div class="events">${S.events.map((e,i)=>`<div class="eventrow"><input value="${esc(e.time||'')}" onchange="S.events[${i}].time=this.value;save()"><input value="${esc(e.text||'')}" onchange="S.events[${i}].text=this.value;save()"><button class="btn red" onclick="S.events.splice(${i},1);save();render()">삭제</button></div>`).join("")}</div><button class="btn blue" style="margin-top:7px" onclick="S.events.push({time:'',text:''});save();render()">+ 일정 추가</button></div>
+ <div class="card"><h2>🎂 생일 등록</h2><div class="birthgrid">${STUDENTS.map(n=>`<div class="birthrow"><b>${n}</b><input value="${esc(S.birthdays[n]||'')}" placeholder="MM-DD" onchange="S.birthdays['${n}']=this.value.trim();save()"></div>`).join("")}</div></div>
+ </div></div>`}
+function textCard(title,key,value,cls){return `<div class="card"><h2>${title}</h2><textarea class="bigarea ${cls}" id="${key}">${esc(value||"")}</textarea><div style="margin-top:7px"><button class="btn blue" onclick="S['${key}']=document.getElementById('${key}').value;save()">저장</button></div></div>`}
+
+/* SEATS */
+function seatsView(){return `<div class="card"><div class="row" style="justify-content:space-between"><h2>🪑 우리 반 자리배치</h2><div class="actions"><button class="btn blue" onclick="randomSeats()">🎲 랜덤</button><button class="btn" onclick="rotateSeats()">🔄 한 칸 이동</button><button class="btn red" onclick="S.seats=[...STUDENTS];save();render()">초기순서</button></div></div><div class="seatwrap"><div class="classroom"><div class="board">칠 판 · 선 생 님</div><div class="seats">${S.seats.map((n,i)=>`<div class="seat" draggable="true" ondragstart="dragIndex=${i}" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropSeat(${i});this.classList.remove('over')" onclick="selected='${n}';tab='personal';render()"><div><div class="name">${n}</div><div class="meta">${roleOf(n)} · ${S.points[n]}점 · 경고 ${S.warnings[n]}</div></div></div>`).join("")}</div></div><div class="card" style="margin:0"><h3>자리배치 사용법</h3><div class="tiny">학생 카드를 드래그해서 서로 자리 교환.<br><br>학생을 클릭하면 개인관리로 바로 이동합니다.</div></div></div></div>`}
+function dropSeat(i){if(dragIndex===null||dragIndex===i)return;[S.seats[dragIndex],S.seats[i]]=[S.seats[i],S.seats[dragIndex]];dragIndex=null;save();render()}
+function randomSeats(){let a=[...S.seats];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}S.seats=a;save();render()}
+function rotateSeats(){S.seats=[...S.seats.slice(1),S.seats[0]];save();render()}
+
+/* ROLES */
+function rolesView(){return `<div class="card"><div class="row" style="justify-content:space-between"><h2>🌈 1인 1역 + 성실도</h2><div class="actions"><button class="btn blue" onclick="autoRoles()">🎲 자동배정</button><button class="btn" onclick="clearDone()">완료체크 초기화</button></div></div>
+ <div class="tiny" style="margin-bottom:10px">완료 여부와 별도로 오늘 역할 수행 태도를 기록할 수 있어요. 성실도 평가는 개인관리에도 자동 저장됩니다.</div>
+ <div class="roles">${ROLES.map((r,i)=>`<div class="role"><div class="rtitle">${r.emoji} ${r.name}</div>${S.roleAssignments[i].map((x,j)=>`<div class="rrow"><select onchange="setRole(${i},${j},this.value)">${opts(x.name,i,j)}</select><button class="done ${x.done?'on':''}" onclick="S.roleAssignments[${i}][${j}].done=!S.roleAssignments[${i}][${j}].done;save();render()">${x.done?'완료✅':'미완료'}</button></div>${x.name?`<div class="reviewrow"><span class="reviewname">${x.name}</span><button class="rv great" onclick="roleReview('${x.name}','${r.name}',2,'🌟 아주 성실')">🌟 아주 성실</button><button class="rv good" onclick="roleReview('${x.name}','${r.name}',1,'🙂 잘함')">🙂 잘함</button><button class="rv poor" onclick="roleReview('${x.name}','${r.name}',0,'△ 아쉬움')">△ 아쉬움</button></div>`:""}`).join("")}</div>`).join("")}</div></div>`}
+function opts(cur,ri,si){return `<option value="">미배정</option>`+STUDENTS.map(n=>{let used=false;for(const [r,a] of Object.entries(S.roleAssignments))a.forEach((x,j)=>{if(x.name===n&&!(Number(r)===ri&&j===si))used=true});return `<option value="${n}" ${cur===n?'selected':''} ${used&&cur!==n?'disabled':''}>${n}${used&&cur!==n?' · 배정됨':''}</option>`}).join("")}
+function setRole(i,j,n){S.roleAssignments[i][j].name=n;if(!n)S.roleAssignments[i][j].done=false;save();render()}
+function autoRoles(){let p=[...STUDENTS];for(let i=p.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]]}let k=0;ROLES.forEach((r,i)=>S.roleAssignments[i]=Array.from({length:r.count},()=>({name:p[k++],done:false})));save();render()}
+function clearDone(){Object.values(S.roleAssignments).flat().forEach(x=>x.done=false);save();render()}
+function roleReview(name,role,val,label){const d=new Date();const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;S.roleReviews[name].push({date:ds,role,value:val,label});S.logs[name].push(`${nowStr()} · ${role} 역할평가 ${label}`);save();alert(`${name} · ${role}\\n${label} 기록 완료!`)}
+
+/* PERSONAL */
+function personalView(){return `<div class="card"><h2>⭐ 개인관리 · 행동기록 · 역할 성실도</h2><div class="personal"><div class="studentlist">${STUDENTS.map(n=>`<div class="srow ${selected===n?'on':''}" onclick="selected='${n}';render()"><span class="sname">${n}</span><span class="tiny">${S.points[n]}점 · ⚠${S.warnings[n]}</span></div>`).join("")}</div>${profile(selected)}</div></div>`}
+function profile(n){const reviews=S.roleReviews[n]||[];const avg=reviews.length?(reviews.reduce((a,b)=>a+Number(b.value||0),0)/reviews.length).toFixed(1):"-";return `<div class="profile"><div class="phead">${n}</div><div class="tiny">🪑 ${seatOf(n)} · 🌈 ${roleOf(n)}</div><div class="stats"><div class="stat"><b>${S.points[n]}</b>점수</div><div class="stat"><b>${S.warnings[n]}</b>경고</div><div class="stat"><b>${S.logs[n].length}</b>생활 기록</div><div class="stat"><b>${avg}</b>역할 성실도</div></div><div class="quick"><button class="btn green" onclick="addScore('${n}',1,'칭찬')">⭐ +1</button><button class="btn green" onclick="addScore('${n}',2,'좋은 행동')">🌟 +2</button><button class="btn red" onclick="addScore('${n}',-1,'감점')">➖ -1</button><button class="btn yellow" onclick="addWarning('${n}')">⚠️ 경고</button></div><div class="noteadd"><input class="input" id="personalNote" placeholder="예: 친구를 도와줌 / 준비물 미지참 / 수업 태도 등"><button class="btn blue" onclick="addNote('${n}')">기록 추가</button></div><h3 style="margin-top:14px">📝 생활 기록</h3><div class="history">${S.logs[n].length?S.logs[n].slice().reverse().map(x=>"• "+esc(x)).join("<br>"):"아직 기록이 없습니다."}</div><h3 style="margin-top:14px">🌈 1인 1역 성실도 기록</h3><div class="reviewhistory">${reviews.length?reviews.slice().reverse().map(x=>`• ${esc(x.date)} · ${esc(x.role)} · ${esc(x.label)}`).join("<br>"):"아직 역할 평가 기록이 없습니다."}</div></div>`}
+function seatOf(n){const i=S.seats.indexOf(n);return i>=0?`${Math.floor(i/6)+1}줄 ${i%6+1}번`:"미배정"}
+function nowStr(){const d=new Date();return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
+function addScore(n,a,r){S.points[n]+=a;S.logs[n].push(`${nowStr()} · ${r} ${a>0?'+':''}${a}점`);save();render()}
+function addWarning(n){S.warnings[n]++;S.logs[n].push(`${nowStr()} · ⚠️ 경고 +1`);save();render()}
+function addNote(n){const e=document.getElementById("personalNote"),v=(e.value||"").trim();if(!v)return;S.logs[n].push(`${nowStr()} · ${v}`);save();render()}
+
+/* OVERVIEW */
+function overviewView(){const ranks=[...STUDENTS].sort((a,b)=>S.points[b]-S.points[a]);const warns=[...STUDENTS].filter(n=>S.warnings[n]>0).sort((a,b)=>S.warnings[b]-S.warnings[a]);const rr=[...STUDENTS].map(n=>{const a=S.roleReviews[n]||[];return {n,c:a.length,avg:a.length?a.reduce((x,y)=>x+Number(y.value||0),0)/a.length:0}}).sort((a,b)=>b.avg-a.avg||b.c-a.c);return `<div class="ovgrid"><div class="card"><h2>🏆 개인 점수</h2>${ranks.map((n,i)=>`<div class="rankrow"><span class="num">${i+1}</span><b>${n}</b><span class="score">${S.points[n]}점</span></div>`).join("")}</div><div><div class="card"><h2>🌈 역할 성실도</h2>${rr.map((x,i)=>`<div class="reviewrank"><span class="num">${i+1}</span><b>${x.n}</b><span class="tiny">${x.c}회 평가</span><span class="score">${x.c?x.avg.toFixed(1):"-"} / 2</span></div>`).join("")}</div><div class="card"><h2>⚠️ 경고 현황</h2>${warns.length?warns.map(n=>`<div class="warnrow"><b>${n}</b><span class="score">${S.warnings[n]}회</span></div>`).join(""):"현재 경고 없음 🌸"}</div></div></div>`}
+
+/* HOME helpers */
+function togglePraise(n){const i=S.praise.students.indexOf(n);if(i>=0)S.praise.students.splice(i,1);else S.praise.students.push(n);save();render()}
+function addTodo(){const e=document.getElementById("todoInput"),v=(e.value||"").trim();if(!v)return;S.todos.push({text:v,done:false});save();render()}
+function preset(sec,label){S.timer={label,duration:sec,remaining:sec,running:false,lastTick:null};save();render()}
+function applyTimer(){const label=document.getElementById("tl").value||"타이머",m=Number(document.getElementById("tm").value||0),s=Number(document.getElementById("ts").value||0),total=Math.max(1,m*60+s);S.timer={label,duration:total,remaining:total,running:false,lastTick:null};save();render()}
+function startTimer(){timerSync();if(S.timer.remaining<=0)S.timer.remaining=S.timer.duration;S.timer.running=true;S.timer.lastTick=Date.now();save();render()}
+function pauseTimer(){timerSync();S.timer.running=false;S.timer.lastTick=null;save();render()}
+function resetTimer(){S.timer.running=false;S.timer.lastTick=null;S.timer.remaining=S.timer.duration;save();render()}
+function openDisplay(){window.open('display.html','nanchoDisplay')}
+function backup(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='난초반_만능툴_COMPLETE_백업.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+
+window.addEventListener("storage",(e)=>{if(e.key===KEY||e.key===KEY+"-ping"){S=load();render()}});
+window.addEventListener("nancho-cloud-update",()=>{
+  S=load();
+  const editing=["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);
+  if(!editing) render();
+});
+window.addEventListener("nancho-cloud-status",(e)=>{
+  const el=document.getElementById("cloudStatus");
+  if(el){el.textContent=(e.detail?.ok?"☁️ ":"⚠️ ")+(e.detail?.text||"");}
+});
+render();
+tick=setInterval(()=>{timerSync();const tv=document.getElementById("teacherTimerValue"),tl=document.getElementById("teacherTimerLabel");if(tv)tv.textContent=fmt(S.timer.remaining);if(tl)tl.textContent=S.timer.label||"타이머"},250);
+</script>
+<script>window.NANCHO_FIREBASE_MODE="teacher";</script>
+<script type="module" src="firebase-bridge.js"></script>
+</body></html>

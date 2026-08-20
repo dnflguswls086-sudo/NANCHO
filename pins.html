@@ -1,0 +1,61 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>난초반 iPad PIN 관리</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Gowun+Dodum&display=swap');
+*{box-sizing:border-box}body{margin:0;background:#eef6ff;color:#33455a;font-family:"Gowun Dodum";padding:18px}.wrap{max-width:1000px;margin:auto}
+.head,.card{background:#fff;border-radius:22px;padding:18px;box-shadow:0 10px 30px rgba(44,72,110,.12);margin-bottom:12px}
+h1{font:700 46px Gaegu;margin:0}.sub{color:#728399;font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.row{display:grid;grid-template-columns:1fr 100px;gap:8px;align-items:center;padding:9px;background:#f7f9fc;border-radius:12px}
+input{width:100%;padding:9px;border:1px solid #d8e2eb;border-radius:10px;font-size:18px;text-align:center}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button{border:0;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer}.blue{background:#6f9ee8;color:#fff}.green{background:#58b779;color:#fff}.red{background:#e87873;color:#fff}
+.warn{background:#fff3d7;border:1px solid #efd48c;border-radius:14px;padding:12px;margin-top:10px;font-size:12px}
+#status{font-weight:900;margin-top:8px}@media(max-width:720px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:480px){.grid{grid-template-columns:1fr}}
+</style></head><body><div class="wrap"><div class="head"><h1>🔐 난초반 iPad PIN 관리</h1><div class="sub">각 학생이 iPad에서 자기 역할만 완료 체크할 때 사용할 4자리 번호입니다.</div><div id="status">Firebase 연결 중...</div></div>
+<div class="card"><div class="grid" id="grid"></div><div class="actions"><button class="blue" id="generate">🎲 PIN 전체 생성</button><button class="green" id="save">☁️ Firebase에 PIN 저장</button><button class="red" id="clearLocal">이 기기의 PIN 표시값 지우기</button></div>
+<div class="warn">PIN은 장난 체크를 줄이기 위한 <b>교실용 간단 보호장치</b>입니다. 4자리 PIN은 강한 보안 수단이 아닙니다. Firebase에는 PIN 원문 대신 SHA-256 해시만 저장하고, 원문 PIN 목록은 이 교사용 브라우저에만 저장합니다.</div></div></div>
+<script type="module">
+import { firebaseConfig, CLASS_ID } from "./firebase-config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const STUDENTS=["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const PLAIN_KEY="nancho-student-pin-plain-v1";
+const grid=document.getElementById("grid"), status=document.getElementById("status");
+let plain={}; try{plain=JSON.parse(localStorage.getItem(PLAIN_KEY)||"{}")}catch(e){}
+
+function render(){
+ grid.innerHTML=STUDENTS.map(n=>`<div class="row"><b>${n}</b><input inputmode="numeric" maxlength="4" data-name="${n}" value="${plain[n]||""}" placeholder="4자리"></div>`).join("");
+}
+function collect(){
+ const x={};grid.querySelectorAll("input").forEach(el=>{if(/^\d{4}$/.test(el.value))x[el.dataset.name]=el.value});return x;
+}
+async function sha256(s){
+ const b=new TextEncoder().encode(s);
+ const h=await crypto.subtle.digest("SHA-256",b);
+ return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+render();
+
+if(String(firebaseConfig.apiKey).includes("PASTE_")){status.textContent="⚠️ firebase-config.js를 먼저 설정하세요.";throw new Error("Firebase not configured")}
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);await signInAnonymously(auth);const ref=doc(db,"classes",CLASS_ID);status.textContent="☁️ Firebase 연결됨";
+
+document.getElementById("generate").onclick=()=>{
+ plain={};STUDENTS.forEach(n=>plain[n]=String(Math.floor(1000+Math.random()*9000)));
+ localStorage.setItem(PLAIN_KEY,JSON.stringify(plain));render();
+};
+document.getElementById("save").onclick=async()=>{
+ plain=collect();
+ if(Object.keys(plain).length!==STUDENTS.length){alert("24명 모두 4자리 PIN을 입력해 주세요.");return}
+ localStorage.setItem(PLAIN_KEY,JSON.stringify(plain));
+ const hashes={};for(const n of STUDENTS)hashes[n]=await sha256(plain[n]);
+ const snap=await getDoc(ref);const data=snap.exists()?snap.data():{};const state=data.state||{};
+ state.studentPinHashes=hashes;
+ await setDoc(ref,{state,updatedAt:serverTimestamp()},{merge:true});
+ alert("24명 PIN 저장 완료!");
+};
+document.getElementById("clearLocal").onclick=()=>{
+ if(!confirm("이 교사용 기기에서 PIN 원문 표시만 지울까요? Firebase의 해시값은 유지됩니다."))return;
+ localStorage.removeItem(PLAIN_KEY);plain={};render();
+};
+</script></body></html>

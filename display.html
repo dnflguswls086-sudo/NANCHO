@@ -1,0 +1,252 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>난초반 학생용 SECTIONS</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap');
+:root{--ink:#31445c;--line:#dce6ef;--blue:#6a92da;--shadow:rgba(45,74,112,.15)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Gowun Dodum",sans-serif;color:var(--ink)}
+body{background:linear-gradient(180deg,#9fcaff 0%,#edf8ff 45%,#d9f0de 45.5%,#73ce90 100%)}
+button{font:inherit;border:0;cursor:pointer;color:inherit}.wrap{min-height:100vh;padding:8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px;border-radius:18px;background:rgba(255,255,255,.95);box-shadow:0 8px 22px var(--shadow)}
+.title{font:700 clamp(62px,7vw,104px)/.88 "Gaegu",cursive}.clock{text-align:right}.date{font-size:17px;color:#74869a;font-weight:900}.time{font:700 clamp(50px,6vw,88px)/1 "Gaegu",cursive}
+.state,.birthday{margin-top:7px;padding:9px 15px;border-radius:15px;text-align:center;font:700 clamp(38px,4.5vw,64px)/1 "Gaegu",cursive}
+.state{background:#fff2bb;border:2px solid #ecd36c}.birthday{background:#fff0f6;border:2px solid #efb4cc}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.nav button{padding:10px 6px;border-radius:14px;background:rgba(255,255,255,.92);box-shadow:0 5px 14px var(--shadow);font:700 clamp(23px,2.5vw,36px) "Gaegu",cursive}.nav button.on{background:var(--blue);color:#fff}
+.page{background:rgba(255,255,255,.94);border-radius:20px;padding:10px;box-shadow:0 10px 24px var(--shadow);min-height:calc(100vh - 235px)}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;box-shadow:0 6px 15px rgba(49,72,104,.07)}
+h2{margin:0 0 6px;font:700 clamp(40px,4.2vw,60px) "Gaegu",cursive}
+.homegrid{display:grid;grid-template-columns:1.14fr .86fr;gap:8px}.left,.right{display:grid;gap:8px;align-content:start}
+.bigtext{min-height:160px;padding:13px;border-radius:16px;white-space:pre-wrap;font:700 clamp(44px,5vw,74px)/1.08 "Gaegu",cursive}
+.notice{background:#f5faff;border:2px dashed #b9d0ef;color:#4f6788}.lunch{background:#fff8e2;border:2px dashed #efce76;color:#715920}.lifebook{background:#f4fff7;border:2px dashed #b9e0c2;color:#4f7059}
+.todo,.events{display:grid;gap:6px}.todoitem,.eventitem{padding:10px 12px;border-radius:12px;background:#f5f8fc;font-size:clamp(21px,2.1vw,30px);font-weight:900}.todoitem.done{text-decoration:line-through;background:#edf9f0;color:#768a7b}
+.monthbirth{font:700 clamp(26px,2.8vw,40px)/1.45 "Gaegu",cursive}
+.activitybox{padding:12px;border-radius:15px;background:#f7f0ff;border:2px solid #d0b9f0;text-align:center}.activitylabel{font:700 clamp(30px,3.2vw,44px) "Gaegu",cursive;color:#6d578f}.activityname{font:700 clamp(50px,5.8vw,82px)/1 "Gaegu",cursive;color:#594684}
+.timerbox{text-align:center}.timerlabel{font:700 clamp(38px,4.2vw,56px) "Gaegu",cursive}.timer{font:700 clamp(112px,14vw,212px)/.84 "Gaegu",cursive;color:#4b7098}.tstate{font-size:17px;color:#74869a;font-weight:900}
+.next,.lunchpromise{padding:15px;border-radius:16px;background:#fff3cd;border:2px solid #e9cf74;font:700 clamp(36px,4vw,56px)/1.12 "Gaegu",cursive}.lunchpromise{text-align:center;background:#fff1dc}.small{display:block;margin-top:5px;font:900 14px "Gowun Dodum",sans-serif;color:#7a899a}
+.rolegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rolecard{padding:11px;border-radius:16px;background:#fff;border:2px solid #e2e8ef}.rtitle{font:700 clamp(29px,3vw,43px) "Gaegu",cursive}.rperson{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;padding:8px 10px;border-radius:11px;background:#f7fafd;font:700 clamp(23px,2.3vw,34px) "Gaegu",cursive}.badge{padding:5px 8px;border-radius:999px;font-size:12px;font-weight:900;background:#edf2f7}.badge.done{background:#e6f7eb;color:#348455}.badge.wait{background:#fff2df;color:#96601e}
+.scoregrid,.donegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.scorecard,.donecard{padding:12px;border-radius:16px;background:#fff;border:2px solid #e1e8ef;text-align:center}.scname,.dname{font:700 clamp(29px,3vw,44px) "Gaegu",cursive}.scnum{font:700 clamp(48px,5vw,72px)/1 "Gaegu",cursive;color:#4f78a4;margin-top:5px}.scmeta,.drole{font-size:13px;color:#738296;font-weight:900;margin-top:4px}.donecard.ok{background:#eefaf1;border-color:#bee0c8}.donecard.no{background:#fff8ec;border-color:#efd6a1}.dstatus{margin-top:5px;font-size:16px;font-weight:1000}
+.seatpage{padding:12px;border-radius:18px;background:#f7fbff;border:2px solid #d9e5ee}.board{width:70%;margin:0 auto 12px;padding:10px;border-radius:12px;background:#355b50;color:#fff;text-align:center;font:700 clamp(30px,3.2vw,44px) "Gaegu",cursive}.seats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.seat{min-height:130px;padding:8px;border-radius:15px;background:#fff;border:2px solid #dce5ed;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.seatname{font:700 clamp(30px,3.4vw,48px)/1 "Gaegu",cursive}.seatrole{font-size:14px;color:#738296;font-weight:900;margin-top:6px}
+@media(max-width:1050px){.nav{grid-template-columns:repeat(3,1fr)}.homegrid{grid-template-columns:1fr}.rolegrid{grid-template-columns:repeat(2,1fr)}.scoregrid,.donegrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:4px}.nav{grid-template-columns:repeat(2,1fr)}.rolegrid{grid-template-columns:1fr}.scoregrid,.donegrid{grid-template-columns:repeat(2,1fr)}.seats{grid-template-columns:repeat(4,1fr)}}
+
+.section-single{display:grid;gap:10px}
+.section-life .bigtext{min-height:420px;font-size:clamp(56px,6vw,92px);line-height:1.08}
+.section-activity{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.section-activity .activitybox{min-height:220px;display:grid;place-items:center}
+.section-activity .timerbox{min-height:300px;display:grid;place-items:center}
+.section-activity .nextwrap{grid-column:1/-1}
+.section-home{display:grid;grid-template-columns:1.08fr .92fr;gap:10px}
+.section-home .left,.section-home .right{display:grid;gap:10px;align-content:start}
+@media(max-width:900px){.section-home,.section-activity{grid-template-columns:1fr}.section-activity .nextwrap{grid-column:auto}}
+</style></head><body><div class="wrap" id="app"></div>
+<script>
+const STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+const KEY = "nancho-dual-master-plus-v1";
+const PERIODS = [
+ {label:"1교시",start:"08:40",end:"09:20"},
+ {label:"2교시",start:"09:30",end:"10:10"},
+ {label:"3교시",start:"10:20",end:"11:00"},
+ {label:"4교시",start:"11:10",end:"11:50"},
+ {label:"5교시",start:"12:00",end:"12:40"},
+ {label:"6교시",start:"13:30",end:"14:10"},
+ {label:"7교시",start:"14:20",end:"15:00"}
+];
+function fresh(){
+ return {
+  seats:[...STUDENTS],
+  roleAssignments:Object.fromEntries(ROLES.map((r,i)=>[i,Array.from({length:r.count},()=>({name:"",done:false}))])),
+  points:Object.fromEntries(STUDENTS.map(n=>[n,0])),
+  warnings:Object.fromEntries(STUDENTS.map(n=>[n,0])),
+  logs:Object.fromEntries(STUDENTS.map(n=>[n,[]])),
+  roleReviews:Object.fromEntries(STUDENTS.map(n=>[n,[]])),
+  studentPinHashes:{},
+  checkHistory:[],
+  birthdays:Object.fromEntries(STUDENTS.map(n=>[n,""])),
+  morningNotice:"좋은 아침이에요!\\n가방 정리와 숙제 제출부터 시작해요 ☀️",
+  lunch:"오늘의 급식을 입력해 주세요 🍱",
+  lunchPromise:"모둠원들과만 이야기할 수 있어요 🤝",
+  announcement:"오늘도 즐겁게 생활해요!\\n다음 시간 준비물을 꼭 확인하세요 🌸",
+  lifeBookText:"생활본 작성할 친구는 쉬는시간에 차분히 적어주세요 ✏️",
+  praise:{students:[],message:""},
+  classState:"쉬는시간 🧸",
+  events:[],
+  todos:[{text:"아침 숙제 제출하기",done:false},{text:"다음 수업 준비물 챙기기",done:false}],
+  timetable:PERIODS.map((p,i)=>({subject:["국어","수학","과학","사회","음악","체육","창체"][i]||""})),
+  timer:{label:"쉬는시간",duration:600,remaining:600,running:false,lastTick:null}
+ };
+}
+function load(){
+ try{
+  const raw=localStorage.getItem(KEY); if(!raw) return fresh();
+  const x=JSON.parse(raw), b=fresh();
+  Object.assign(b,x);
+  STUDENTS.forEach(n=>{
+    b.points[n]=Number(x.points?.[n]||0);
+    b.warnings[n]=Number(x.warnings?.[n]||0);
+    b.logs[n]=Array.isArray(x.logs?.[n])?x.logs[n]:[];
+    b.roleReviews[n]=Array.isArray(x.roleReviews?.[n])?x.roleReviews[n]:[];
+    b.birthdays[n]=String(x.birthdays?.[n]||"");
+  });
+  ROLES.forEach((r,i)=>{
+    if(Array.isArray(x.roleAssignments?.[i])){
+      b.roleAssignments[i]=Array.from({length:r.count},(_,j)=>{
+        const it=x.roleAssignments[i][j];
+        if(it && typeof it==="object") return {name:String(it.name||""),done:!!it.done};
+        return {name:String(it||""),done:false};
+      });
+    }
+  });
+  if(!b.titleText) b.titleText="난초반 오늘";
+  if(!b.praise || typeof b.praise!=="object") b.praise={students:[],message:""};
+  if(!Array.isArray(b.praise.students)) b.praise.students=[];
+  if(!Array.isArray(b.events)) b.events=[];
+  return b;
+ }catch(e){return fresh()}
+}
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(S));
+ try{localStorage.setItem(KEY+"-ping",String(Date.now()));}catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function roleOf(n){for(let i=0;i<ROLES.length;i++) if(S.roleAssignments[i].some(x=>x.name===n)) return ROLES[i].name; return "미배정";}
+function roleAssigned(){return Object.values(S.roleAssignments).flat().map(x=>x.name).filter(Boolean).length;}
+function roleDone(){return Object.values(S.roleAssignments).flat().filter(x=>x.done).length;}
+function fmt(sec){sec=Math.max(0,Math.floor(sec||0));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;}
+function timerSync(){
+ if(S.timer.running && S.timer.lastTick){
+  const diff=Math.floor((Date.now()-S.timer.lastTick)/1000);
+  if(diff>0){
+    S.timer.remaining=Math.max(0,S.timer.remaining-diff);
+    S.timer.lastTick=Date.now();
+    if(S.timer.remaining<=0){S.timer.running=false;S.timer.remaining=0;}
+    save();
+  }
+ }
+}
+function hm(hm){const [h,m]=hm.split(":").map(Number);return h*60+m;}
+function periodStatus(){
+ const d=new Date(), now=d.getHours()*60+d.getMinutes();
+ const lunchStart=12*60+30, lunchEnd=13*60+20;
+ if(now>=lunchStart && now<=lunchEnd){
+   return {
+     current:{type:"lunch",label:"점심시간",start:"12:30",end:"13:20",subject:"점심시간"},
+     next:{index:5,label:"6교시",start:"13:30",end:"14:10",subject:S.timetable?.[5]?.subject||""}
+   };
+ }
+ let current=null,next=null;
+ PERIODS.forEach((p,i)=>{
+  if(now>=hm(p.start)&&now<=hm(p.end)) current={index:i,...p,subject:S.timetable?.[i]?.subject||""};
+  if(!next && now<hm(p.start)) next={index:i,...p,subject:S.timetable?.[i]?.subject||""};
+ });
+ if(!next && current && PERIODS[current.index+1]){
+   const i=current.index+1;
+   next={index:i,...PERIODS[i],subject:S.timetable?.[i]?.subject||""};
+ }
+ return {current,next};
+}
+function todayBirthdays(){
+ const d=new Date(), md=`${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+ return STUDENTS.filter(n=>S.birthdays[n]===md);
+}
+function monthBirthdays(){
+ const d=new Date(), mm=String(d.getMonth()+1).padStart(2,"0");
+ return STUDENTS.filter(n=>String(S.birthdays[n]||"").startsWith(mm+"-"))
+   .sort((a,b)=>S.birthdays[a].localeCompare(S.birthdays[b]));
+}
+let S=load(), interval=null, page="home";
+function render(){
+ timerSync();
+ const ps=periodStatus(), bdays=todayBirthdays(), mb=monthBirthdays();
+ document.getElementById("app").innerHTML=`
+ <div class="top"><div class="title">🌸 ${esc(S.titleText||"난초반 오늘")}</div><div class="clock"><div class="date">${new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"})}</div><div class="time">${new Date().toLocaleTimeString("ko-KR",{hour12:false})}</div></div></div>
+ <div class="state">🚦 ${esc(S.classState||"쉬는시간 🧸")}</div>
+ ${bdays.length?`<div class="birthday">🎂 오늘은 ${bdays.map(esc).join(", ")}의 생일이에요! 축하해요 🎉</div>`:""}
+ <div class="nav">
+   ${navBtn("home","🏠 오늘의 안내")}
+   ${navBtn("life","📝 생활본")}
+   ${navBtn("activity","⏱️ 현재 활동")}
+   ${navBtn("roles","🌈 1인 1역")}
+   ${navBtn("scores","⭐ 점수표")}
+   ${navBtn("done","✅ 역할 완료")}
+   ${navBtn("seats","🪑 자리배치")}
+ </div>
+ <div class="page">${pageView(ps,mb)}</div>`;
+}
+function navBtn(id,t){return `<button class="${page===id?'on':''}" onclick="page='${id}';render()">${t}</button>`}
+function pageView(ps,mb){
+ if(page==="life")return lifePage();
+ if(page==="activity")return activityPage(ps);
+ if(page==="roles")return rolesPage();
+ if(page==="scores")return scoresPage();
+ if(page==="done")return donePage();
+ if(page==="seats")return seatsPage();
+ return homePage(mb);
+}
+
+function homePage(mb){
+ return `<div class="section-home">
+   <div class="left">
+     <div class="card"><h2>📢 안내사항</h2><div class="bigtext notice">${esc(S.announcement||"")}</div></div>
+     <div class="card"><h2>🍱 오늘의 급식</h2><div class="bigtext lunch">${esc(S.lunch||"")}</div></div>
+   </div>
+   <div class="right">
+     <div class="card"><h2>✅ 해야 할 일</h2><div class="todo">${S.todos.length?S.todos.map(t=>`<div class="todoitem ${t.done?'done':''}">${t.done?'✅':'⬜'} ${esc(t.text)}</div>`).join(""):`<div class="todoitem">해야 할 일이 없어요 😊</div>`}</div></div>
+     <div class="card"><h2>🎂 이번 달 생일</h2><div class="monthbirth">${mb.length?mb.map(n=>`${esc(S.birthdays[n].slice(3))}일 · ${esc(n)}`).join("<br>"):"이번 달 생일 등록 없음"}</div></div>
+     <div class="card"><h2>📅 오늘 일정</h2><div class="events">${S.events.length?S.events.map(e=>`<div class="eventitem">${esc(e.time||"")} ${esc(e.text||"")}</div>`).join(""):`<div class="eventitem">특별 일정이 없어요 😊</div>`}</div></div>
+   </div>
+ </div>`;
+}
+
+function lifePage(){
+ return `<div class="section-single section-life">
+   <div class="card">
+     <h2>📝 생활본 작성</h2>
+     <div class="bigtext lifebook">${esc(S.lifeBookText||"")}</div>
+   </div>
+ </div>`;
+}
+
+function activityPage(ps){
+ return `<div class="section-activity">
+   <div class="card">
+     <h2>📚 현재 활동</h2>
+     <div class="activitybox"><div><div class="activitylabel">지금 하고 있는 활동</div><div class="activityname">${esc(S.timer.label||"활동")}</div></div></div>
+   </div>
+   <div class="card timerbox">
+     <div><h2>⏱️ 타이머</h2><div class="timerlabel">${esc(S.timer.label||"타이머")}</div><div class="timer">${fmt(S.timer.remaining)}</div><div class="tstate">${S.timer.running?"진행 중":"대기 중"}</div></div>
+   </div>
+   <div class="card nextwrap">
+     <h2>${ps.current?.type==="lunch"?"🍱 점심시간 약속":"📘 다음 수업 안내"}</h2>
+     ${ps.current?.type==="lunch"
+       ? `<div class="lunchpromise">${esc(S.lunchPromise||"모둠원들과만 이야기할 수 있어요 🤝")}<span class="small">점심시간 12:30~13:20 · 다음은 6교시 ${esc(ps.next?.subject||"")} 13:30 시작</span></div>`
+       : `<div class="next">${ps.current?`지금은 ${ps.current.label} ${esc(ps.current.subject||"")}`:(ps.next?`다음은 ${ps.next.label} ${esc(ps.next.subject||"")}`:"오늘 수업이 거의 끝났어요!")}<span class="small">${ps.next?`${ps.next.start} 시작`:""}</span></div>`}
+   </div>
+ </div>`;
+}
+
+function rolesPage(){
+ return `<div><h2>🌈 1인 1역 확인</h2><div class="rolegrid">${ROLES.map((r,i)=>`<div class="rolecard"><div class="rtitle">${r.emoji} ${esc(r.name)}</div>${S.roleAssignments[i].map(x=>`<div class="rperson"><span>${esc(x.name||"미배정")}</span><span class="badge ${x.done?'done':'wait'}">${x.done?'완료 ✅':'미완료'}</span></div>`).join("")}</div>`).join("")}</div></div>`;
+}
+
+function scoresPage(){
+ const ranked=[...STUDENTS].sort((a,b)=>Number(S.points[b]||0)-Number(S.points[a]||0));
+ return `<div><h2>⭐ 오늘의 점수표</h2><div class="scoregrid">${ranked.map((n,i)=>`<div class="scorecard"><div class="scname">${i+1}. ${esc(n)}</div><div class="scnum">${Number(S.points[n]||0)}점</div><div class="scmeta">${esc(roleOf(n))}</div></div>`).join("")}</div></div>`;
+}
+
+function donePage(){
+ return `<div><h2>✅ 1인 1역 완료 여부</h2><div class="donegrid">${STUDENTS.map(n=>{let role="미배정",done=false;for(let i=0;i<ROLES.length;i++){const slot=S.roleAssignments[i].find(x=>x.name===n);if(slot){role=ROLES[i].name;done=slot.done;break}}return `<div class="donecard ${done?'ok':'no'}"><div class="dname">${esc(n)}</div><div class="drole">${esc(role)}</div><div class="dstatus">${done?'✅ 완료':'⏳ 미완료'}</div></div>`}).join("")}</div></div>`;
+}
+
+function seatsPage(){
+ return `<div><h2>🪑 난초반 자리배치표</h2><div class="seatpage"><div class="board">칠 판 · 선 생 님</div><div class="seats">${S.seats.map((n,i)=>`<div class="seat"><div class="seatname">${esc(n)}</div><div class="seatrole">${i+1}번 자리 · ${esc(roleOf(n))}</div></div>`).join("")}</div></div></div>`;
+}
+
+window.addEventListener("storage",()=>{S=load();render()});
+window.addEventListener("nancho-cloud-update",()=>{S=load();render()});
+window.addEventListener("nancho-cloud-status",(e)=>{
+  console.log(e.detail?.text||"");
+});
+render();
+interval=setInterval(()=>{S=load();render()},1000);
+</script>
+<script>window.NANCHO_FIREBASE_MODE="display";</script>
+<script type="module" src="firebase-bridge.js"></script>
+</body></html>

@@ -1,0 +1,83 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>난초반 1인1역 체크</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Gowun+Dodum&display=swap');
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#a7d3ff,#eef9ff 48%,#dff4df 48%,#75d28e);color:#33455a;font-family:"Gowun Dodum";padding:12px}
+.wrap{max-width:1100px;margin:auto}.head{background:#fff;border-radius:24px;padding:14px 18px;box-shadow:0 12px 30px rgba(45,72,107,.13);text-align:center}
+h1{font:700 clamp(44px,7vw,76px)/.9 Gaegu;margin:0}.status{font-size:13px;color:#718397;margin-top:4px;font-weight:900}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.student{min-height:105px;border:0;border-radius:18px;background:#fff;box-shadow:0 7px 18px rgba(45,72,107,.12);font:700 clamp(28px,4vw,42px) Gaegu;color:#40566e}.student.done{background:#ecf9ef;color:#428256}.student:active{transform:scale(.97)}
+.overlay{position:fixed;inset:0;background:rgba(28,42,59,.48);display:none;align-items:center;justify-content:center;padding:15px;z-index:10}.overlay.on{display:flex}
+.modal{width:min(620px,96vw);background:#fff;border-radius:26px;padding:22px;text-align:center;box-shadow:0 20px 60px rgba(20,31,47,.25)}
+.name{font:700 55px Gaegu}.role{font:700 42px Gaegu;color:#5678a2;margin:8px 0 14px}.pin{font-size:34px;letter-spacing:12px;text-align:center;width:240px;padding:12px;border:2px solid #cfdce8;border-radius:15px}
+.actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}button.action{border:0;border-radius:14px;padding:14px 20px;font-size:20px;font-weight:900;cursor:pointer}.ok{background:#62bf7d;color:#fff}.cancel{background:#e8eef4;color:#51667d}
+.success{font:700 clamp(48px,8vw,82px)/1.05 Gaegu;color:#438559}.small{font-size:14px;color:#718397;margin-top:8px}
+@media(max-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div class="wrap"><div class="head"><h1>🌈 1인 1역 완료 체크</h1><div class="status" id="status">Firebase 연결 중...</div></div><div class="grid" id="grid"></div></div>
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<script type="module">
+import { firebaseConfig, CLASS_ID } from "./firebase-config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const STUDENTS=["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
+const ROLES=[{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}];
+let STATE=null, selected=null, attempts={}, lockUntil={};
+const grid=document.getElementById("grid"),overlay=document.getElementById("overlay"),modal=document.getElementById("modal"),status=document.getElementById("status");
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function roleInfo(n,state=STATE){
+ for(let i=0;i<ROLES.length;i++){
+   const arr=state?.roleAssignments?.[i]||[];
+   for(let j=0;j<arr.length;j++)if(arr[j]?.name===n)return {i,j,role:ROLES[i].name,done:!!arr[j].done};
+ }
+ return null;
+}
+async function sha256(s){const b=new TextEncoder().encode(s);const h=await crypto.subtle.digest("SHA-256",b);return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+function render(){
+ grid.innerHTML=STUDENTS.map(n=>{const r=roleInfo(n);return `<button class="student ${r?.done?'done':''}" data-name="${n}">${esc(n)}${r?.done?'<br><span style="font-size:16px">✅ 완료</span>':''}</button>`}).join("");
+ grid.querySelectorAll(".student").forEach(b=>b.onclick=()=>openStudent(b.dataset.name));
+}
+function close(){overlay.classList.remove("on");selected=null}
+function openStudent(n){
+ selected=n;const r=roleInfo(n);
+ if(!r){modal.innerHTML=`<div class="name">${esc(n)}</div><div class="role">오늘 역할이 아직 배정되지 않았어요.</div><div class="actions"><button class="action cancel" id="x">돌아가기</button></div>`;overlay.classList.add("on");document.getElementById("x").onclick=close;return}
+ if(r.done){modal.innerHTML=`<div class="success">✅ ${esc(n)}<br>오늘 역할 완료!</div><div class="role">${esc(r.role)}</div><div class="actions"><button class="action cancel" id="x">확인</button></div>`;overlay.classList.add("on");document.getElementById("x").onclick=close;return}
+ const now=Date.now();if((lockUntil[n]||0)>now){const sec=Math.ceil((lockUntil[n]-now)/1000);alert(`잠시 후 다시 시도해 주세요. (${sec}초)`);return}
+ modal.innerHTML=`<div class="name">${esc(n)}</div><div class="role">오늘 역할 · ${esc(r.role)}</div><div class="small">자기 PIN 4자리를 입력하세요.</div><input id="pin" class="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"><div class="actions"><button class="action cancel" id="x">취소</button><button class="action ok" id="go">확인</button></div>`;
+ overlay.classList.add("on");setTimeout(()=>document.getElementById("pin").focus(),100);
+ document.getElementById("x").onclick=close;document.getElementById("go").onclick=verify;
+ document.getElementById("pin").addEventListener("keydown",e=>{if(e.key==="Enter")verify()});
+}
+async function verify(){
+ const n=selected,pin=document.getElementById("pin").value.trim();
+ if(!/^\d{4}$/.test(pin)){alert("4자리 숫자를 입력해 주세요.");return}
+ const hash=await sha256(pin), correct=STATE?.studentPinHashes?.[n];
+ if(!correct){alert("아직 이 학생의 PIN이 등록되지 않았어요. 선생님께 알려주세요.");return}
+ if(hash!==correct){
+   attempts[n]=(attempts[n]||0)+1;
+   if(attempts[n]>=3){lockUntil[n]=Date.now()+20000;attempts[n]=0;close();alert("3번 틀렸어요. 20초 뒤 다시 시도할 수 있어요.");}
+   else alert(`PIN이 달라요. (${attempts[n]}/3)`);
+   return;
+ }
+ await completeRole(n);
+}
+async function completeRole(n){
+ const ref=doc(db,"classes",CLASS_ID);
+ await runTransaction(db,async tx=>{
+   const snap=await tx.get(ref);if(!snap.exists())throw new Error("class data missing");
+   const data=snap.data(),state=data.state||{},r=roleInfo(n,state);if(!r)throw new Error("role missing");
+   state.roleAssignments[r.i][r.j].done=true;
+   if(!Array.isArray(state.checkHistory))state.checkHistory=[];
+   state.checkHistory.push({student:n,role:r.role,checkedAt:new Date().toISOString(),source:"ipad"});
+   if(state.checkHistory.length>300)state.checkHistory=state.checkHistory.slice(-300);
+   tx.set(ref,{state,updatedAt:serverTimestamp()},{merge:true});
+ });
+ modal.innerHTML=`<div class="success">🌸 ${esc(n)}<br>${esc(roleInfo(n)?.role||"역할")} 완료!</div><div class="small">난초반을 위해 맡은 일을 해줘서 고마워요 ✨</div>`;
+ setTimeout(close,2200);
+}
+if(String(firebaseConfig.apiKey).includes("PASTE_")){status.textContent="⚠️ Firebase 설정이 필요합니다.";throw new Error("Firebase not configured")}
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);await signInAnonymously(auth);const ref=doc(db,"classes",CLASS_ID);
+onSnapshot(ref,snap=>{if(!snap.exists()){status.textContent="선생님 화면에서 Firebase 데이터를 먼저 만들어 주세요.";return}STATE=snap.data().state||{};status.textContent="☁️ 실시간 연결됨 · 자기 이름을 눌러주세요";render()},err=>{console.error(err);status.textContent="⚠️ Firebase 연결 오류"});
+overlay.onclick=e=>{if(e.target===overlay)close()};
+</script></body></html>
