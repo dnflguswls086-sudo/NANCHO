@@ -257,12 +257,46 @@ function roleReview(name,role,val,label){const d=new Date();const ds=`${d.getFul
 
 /* PERSONAL */
 function personalView(){return `<div class="card"><h2>⭐ 개인관리 · 행동기록 · 역할 성실도</h2><div class="personal"><div class="studentlist">${STUDENTS.map(n=>`<div class="srow ${selected===n?'on':''}" onclick="selected='${n}';render()"><span class="sname">${n}</span><span class="tiny">${S.points[n]}점 · ⚠${S.warnings[n]}</span></div>`).join("")}</div>${profile(selected)}</div></div>`}
-function profile(n){const reviews=S.roleReviews[n]||[];const avg=reviews.length?(reviews.reduce((a,b)=>a+Number(b.value||0),0)/reviews.length).toFixed(1):"-";return `<div class="profile"><div class="phead">${n}</div><div class="tiny">🪑 ${seatOf(n)} · 🌈 ${roleOf(n)}</div><div class="stats"><div class="stat"><b>${S.points[n]}</b>점수</div><div class="stat"><b>${S.warnings[n]}</b>경고</div><div class="stat"><b>${S.logs[n].length}</b>생활 기록</div><div class="stat"><b>${avg}</b>역할 성실도</div></div><div class="quick"><button class="btn green" onclick="addScore('${n}',1,'칭찬')">⭐ +1</button><button class="btn green" onclick="addScore('${n}',2,'좋은 행동')">🌟 +2</button><button class="btn red" onclick="addScore('${n}',-1,'감점')">➖ -1</button><button class="btn yellow" onclick="addWarning('${n}')">⚠️ 경고</button></div><div class="noteadd"><input class="input" id="personalNote" placeholder="예: 친구를 도와줌 / 준비물 미지참 / 수업 태도 등"><button class="btn blue" onclick="addNote('${n}')">기록 추가</button></div><h3 style="margin-top:14px">📝 생활 기록</h3><div class="history">${S.logs[n].length?S.logs[n].slice().reverse().map(x=>"• "+esc(x)).join("<br>"):"아직 기록이 없습니다."}</div><h3 style="margin-top:14px">🌈 1인 1역 성실도 기록</h3><div class="reviewhistory">${reviews.length?reviews.slice().reverse().map(x=>`• ${esc(x.date)} · ${esc(x.role)} · ${esc(x.label)}`).join("<br>"):"아직 역할 평가 기록이 없습니다."}</div></div>`}
+function profile(n){const reviews=S.roleReviews[n]||[];const avg=reviews.length?(reviews.reduce((a,b)=>a+Number(b.value||0),0)/reviews.length).toFixed(1):"-";return `<div class="profile"><div class="phead">${n}</div><div class="tiny">🪑 ${seatOf(n)} · 🌈 ${roleOf(n)}</div><div class="stats"><div class="stat"><b>${S.points[n]}</b>점수</div><div class="stat"><b>${S.warnings[n]}</b>경고</div><div class="stat"><b>${S.logs[n].length}</b>생활 기록</div><div class="stat"><b>${avg}</b>역할 성실도</div></div><div class="quick"><button class="btn green" onclick="addScore('${n}',1,'칭찬')">⭐ +1</button><button class="btn green" onclick="addScore('${n}',2,'좋은 행동')">🌟 +2</button><button class="btn red" onclick="addScore('${n}',-1,'감점')">➖ -1</button><button class="btn yellow" onclick="addWarning('${n}')">⚠️ 경고</button></div><div class="noteadd"><input class="input" id="personalNote" placeholder="예: 친구를 도와줌 / 준비물 미지참 / 수업 태도 등"><button class="btn blue" onclick="addNote('${n}')">기록 추가</button></div><h3 style="margin-top:14px">📝 생활 기록</h3>
+<div class="history">${S.logs[n].length
+ ? S.logs[n].map((x,i)=>({x,i})).reverse().map(o=>`
+   <div style="display:grid;grid-template-columns:1fr auto;gap:7px;align-items:start;padding:6px 0;border-bottom:1px dashed #e2e8ef">
+     <span>• ${esc(o.x)}</span>
+     <button class="btn red" style="padding:4px 7px;font-size:10px" onclick="deleteLog('${n}',${o.i})">🗑 삭제</button>
+   </div>`).join("")
+ : "아직 기록이 없습니다."}</div>
+<h3 style="margin-top:14px">🌈 1인 1역 성실도 기록</h3>
+<div class="reviewhistory">${reviews.length
+ ? reviews.map((x,i)=>({x,i})).reverse().map(o=>`
+   <div style="display:grid;grid-template-columns:1fr auto;gap:7px;align-items:start;padding:6px 0;border-bottom:1px dashed #eadfca">
+     <span>• ${esc(o.x.date)} · ${esc(o.x.role)} · ${esc(o.x.label)}</span>
+     <button class="btn red" style="padding:4px 7px;font-size:10px" onclick="deleteRoleReview('${n}',${o.i})">🗑 삭제</button>
+   </div>`).join("")
+ : "아직 역할 평가 기록이 없습니다."}</div></div>`}
 function seatOf(n){const i=S.seats.indexOf(n);return i>=0?`${Math.floor(i/6)+1}줄 ${i%6+1}번`:"미배정"}
 function nowStr(){const d=new Date();return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
 function addScore(n,a,r){S.points[n]+=a;S.logs[n].push(`${nowStr()} · ${r} ${a>0?'+':''}${a}점`);save();render()}
 function addWarning(n){S.warnings[n]++;S.logs[n].push(`${nowStr()} · ⚠️ 경고 +1`);save();render()}
-function addNote(n){const e=document.getElementById("personalNote"),v=(e.value||"").trim();if(!v)return;S.logs[n].push(`${nowStr()} · ${v}`);save();render()}
+function addNote(n){
+ const e=document.getElementById("personalNote"),v=(e.value||"").trim();
+ if(!v)return;
+ S.logs[n].push(`${nowStr()} · ${v}`);
+ save();render();
+}
+function deleteLog(n,i){
+ const item=S.logs?.[n]?.[i];
+ if(item==null)return;
+ if(!confirm(`${n}의 이 생활기록을 삭제할까요?\n\n${item}`))return;
+ S.logs[n].splice(i,1);
+ save();render();
+}
+function deleteRoleReview(n,i){
+ const item=S.roleReviews?.[n]?.[i];
+ if(!item)return;
+ if(!confirm(`${n}의 역할 성실도 기록을 삭제할까요?\n\n${item.date} · ${item.role} · ${item.label}`))return;
+ S.roleReviews[n].splice(i,1);
+ save();render();
+}
 
 /* OVERVIEW */
 function overviewView(){const ranks=[...STUDENTS].sort((a,b)=>S.points[b]-S.points[a]);const warns=[...STUDENTS].filter(n=>S.warnings[n]>0).sort((a,b)=>S.warnings[b]-S.warnings[a]);const rr=[...STUDENTS].map(n=>{const a=S.roleReviews[n]||[];return {n,c:a.length,avg:a.length?a.reduce((x,y)=>x+Number(y.value||0),0)/a.length:0}}).sort((a,b)=>b.avg-a.avg||b.c-a.c);return `<div class="ovgrid"><div class="card"><h2>🏆 개인 점수</h2>${ranks.map((n,i)=>`<div class="rankrow"><span class="num">${i+1}</span><b>${n}</b><span class="score">${S.points[n]}점</span></div>`).join("")}</div><div><div class="card"><h2>🌈 역할 성실도</h2>${rr.map((x,i)=>`<div class="reviewrank"><span class="num">${i+1}</span><b>${x.n}</b><span class="tiny">${x.c}회 평가</span><span class="score">${x.c?x.avg.toFixed(1):"-"} / 2</span></div>`).join("")}</div><div class="card"><h2>⚠️ 경고 현황</h2>${warns.length?warns.map(n=>`<div class="warnrow"><b>${n}</b><span class="score">${S.warnings[n]}회</span></div>`).join(""):"현재 경고 없음 🌸"}</div></div></div>`}
