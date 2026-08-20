@@ -9,12 +9,12 @@ button{font:inherit;border:0;cursor:pointer;color:inherit}.wrap{min-height:100vh
 .title{font:700 clamp(62px,7vw,104px)/.88 "Gaegu",cursive}.clock{text-align:right}.date{font-size:17px;color:#74869a;font-weight:900}.time{font:700 clamp(50px,6vw,88px)/1 "Gaegu",cursive}
 .state,.birthday{margin-top:7px;padding:9px 15px;border-radius:15px;text-align:center;font:700 clamp(38px,4.5vw,64px)/1 "Gaegu",cursive}
 .state{background:#fff2bb;border:2px solid #ecd36c}.birthday{background:#fff0f6;border:2px solid #efb4cc}
-.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.nav button{padding:10px 6px;border-radius:14px;background:rgba(255,255,255,.92);box-shadow:0 5px 14px var(--shadow);font:700 clamp(23px,2.5vw,36px) "Gaegu",cursive}.nav button.on{background:var(--blue);color:#fff}
-.page{background:rgba(255,255,255,.94);border-radius:20px;padding:10px;box-shadow:0 10px 24px var(--shadow);min-height:calc(100vh - 235px)}
+.mainlayout{display:grid;grid-template-columns:175px 1fr;gap:8px;margin-top:8px}.nav{display:grid;grid-template-columns:1fr;gap:6px;align-content:start;position:sticky;top:8px}.nav button{padding:10px 8px;border-radius:13px;background:rgba(255,255,255,.94);box-shadow:0 5px 14px var(--shadow);font:700 clamp(18px,1.6vw,25px) "Gaegu",cursive;text-align:left;white-space:nowrap}.nav button.on{background:var(--blue);color:#fff;transform:translateX(2px)}
+.page{background:rgba(255,255,255,.94);border-radius:20px;padding:10px;box-shadow:0 10px 24px var(--shadow);min-height:calc(100vh - 165px)}
 .card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;box-shadow:0 6px 15px rgba(49,72,104,.07)}
-h2{margin:0 0 6px;font:700 clamp(40px,4.2vw,60px) "Gaegu",cursive}
+h2{margin:0 0 6px;font:700 clamp(44px,4.5vw,66px) "Gaegu",cursive}
 .homegrid{display:grid;grid-template-columns:1.14fr .86fr;gap:8px}.left,.right{display:grid;gap:8px;align-content:start}
-.bigtext{min-height:160px;padding:13px;border-radius:16px;white-space:pre-wrap;font:700 clamp(44px,5vw,74px)/1.08 "Gaegu",cursive}
+.bigtext{min-height:175px;padding:14px;border-radius:16px;white-space:pre-wrap;font:700 clamp(48px,5.2vw,78px)/1.08 "Gaegu",cursive}
 .notice{background:#f5faff;border:2px dashed #b9d0ef;color:#4f6788}.lunch{background:#fff8e2;border:2px dashed #efce76;color:#715920}.lifebook{background:#f4fff7;border:2px dashed #b9e0c2;color:#4f7059}
 .todo,.events{display:grid;gap:6px}.todoitem,.eventitem{padding:10px 12px;border-radius:12px;background:#f5f8fc;font-size:clamp(21px,2.1vw,30px);font-weight:900}.todoitem.done{text-decoration:line-through;background:#edf9f0;color:#768a7b}
 .monthbirth{font:700 clamp(26px,2.8vw,40px)/1.45 "Gaegu",cursive}
@@ -24,7 +24,7 @@ h2{margin:0 0 6px;font:700 clamp(40px,4.2vw,60px) "Gaegu",cursive}
 .rolegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rolecard{padding:11px;border-radius:16px;background:#fff;border:2px solid #e2e8ef}.rtitle{font:700 clamp(29px,3vw,43px) "Gaegu",cursive}.rperson{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;padding:8px 10px;border-radius:11px;background:#f7fafd;font:700 clamp(23px,2.3vw,34px) "Gaegu",cursive}.badge{padding:5px 8px;border-radius:999px;font-size:12px;font-weight:900;background:#edf2f7}.badge.done{background:#e6f7eb;color:#348455}.badge.wait{background:#fff2df;color:#96601e}
 .scoregrid,.donegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.scorecard,.donecard{padding:12px;border-radius:16px;background:#fff;border:2px solid #e1e8ef;text-align:center}.scname,.dname{font:700 clamp(29px,3vw,44px) "Gaegu",cursive}.scnum{font:700 clamp(48px,5vw,72px)/1 "Gaegu",cursive;color:#4f78a4;margin-top:5px}.scmeta,.drole{font-size:13px;color:#738296;font-weight:900;margin-top:4px}.donecard.ok{background:#eefaf1;border-color:#bee0c8}.donecard.no{background:#fff8ec;border-color:#efd6a1}.dstatus{margin-top:5px;font-size:16px;font-weight:1000}
 .seatpage{padding:12px;border-radius:18px;background:#f7fbff;border:2px solid #d9e5ee}.board{width:70%;margin:0 auto 12px;padding:10px;border-radius:12px;background:#355b50;color:#fff;text-align:center;font:700 clamp(30px,3.2vw,44px) "Gaegu",cursive}.seats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.seat{min-height:130px;padding:8px;border-radius:15px;background:#fff;border:2px solid #dce5ed;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.seatname{font:700 clamp(30px,3.4vw,48px)/1 "Gaegu",cursive}.seatrole{font-size:14px;color:#738296;font-weight:900;margin-top:6px}
-@media(max-width:1050px){.nav{grid-template-columns:repeat(3,1fr)}.homegrid{grid-template-columns:1fr}.rolegrid{grid-template-columns:repeat(2,1fr)}.scoregrid,.donegrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:4px}.nav{grid-template-columns:repeat(2,1fr)}.rolegrid{grid-template-columns:1fr}.scoregrid,.donegrid{grid-template-columns:repeat(2,1fr)}.seats{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1050px){.mainlayout{grid-template-columns:145px 1fr}.homegrid{grid-template-columns:1fr}.rolegrid{grid-template-columns:repeat(2,1fr)}.scoregrid,.donegrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:4px}.mainlayout{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,1fr);position:static}.nav button{text-align:center}.rolegrid{grid-template-columns:1fr}.scoregrid,.donegrid{grid-template-columns:repeat(2,1fr)}.seats{grid-template-columns:repeat(4,1fr)}}
 
 .section-single{display:grid;gap:10px}
 .section-life .bigtext{min-height:420px;font-size:clamp(56px,6vw,92px);line-height:1.08}
@@ -159,16 +159,18 @@ function render(){
  <div class="top"><div class="title">🌸 ${esc(S.titleText||"난초반 오늘")}</div><div class="clock"><div class="date">${new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"})}</div><div class="time">${new Date().toLocaleTimeString("ko-KR",{hour12:false})}</div></div></div>
  <div class="state">🚦 ${esc(S.classState||"쉬는시간 🧸")}</div>
  ${bdays.length?`<div class="birthday">🎂 오늘은 ${bdays.map(esc).join(", ")}의 생일이에요! 축하해요 🎉</div>`:""}
- <div class="nav">
-   ${navBtn("home","🏠 오늘의 안내")}
-   ${navBtn("life","📝 생활본")}
-   ${navBtn("activity","⏱️ 현재 활동")}
-   ${navBtn("roles","🌈 1인 1역")}
-   ${navBtn("scores","⭐ 점수표")}
-   ${navBtn("done","✅ 역할 완료")}
-   ${navBtn("seats","🪑 자리배치")}
- </div>
- <div class="page">${pageView(ps,mb)}</div>`;
+ <div class="mainlayout">
+   <div class="nav">
+     ${navBtn("home","🏠 오늘의 안내")}
+     ${navBtn("life","📝 생활본")}
+     ${navBtn("activity","⏱️ 현재 활동")}
+     ${navBtn("roles","🌈 1인 1역")}
+     ${navBtn("scores","⭐ 점수표")}
+     ${navBtn("done","✅ 역할 완료")}
+     ${navBtn("seats","🪑 자리배치")}
+   </div>
+   <div class="page">${pageView(ps,mb)}</div>
+ </div>`;
 }
 function navBtn(id,t){return `<button class="${page===id?'on':''}" onclick="page='${id}';render()">${t}</button>`}
 function pageView(ps,mb){
