@@ -1,5 +1,12 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>난초반 1인1역 체크</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="theme-color" content="#79a7e9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="난초반 역할">
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Gowun+Dodum&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#a7d3ff,#eef9ff 48%,#dff4df 48%,#75d28e);color:#33455a;font-family:"Gowun Dodum";padding:12px}
@@ -12,7 +19,10 @@ h1{font:700 clamp(44px,7vw,76px)/.9 Gaegu;margin:0}.status{font-size:13px;color:
 .actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}button.action{border:0;border-radius:14px;padding:14px 20px;font-size:20px;font-weight:900;cursor:pointer}.ok{background:#62bf7d;color:#fff}.cancel{background:#e8eef4;color:#51667d}
 .success{font:700 clamp(48px,8vw,82px)/1.05 Gaegu;color:#438559}.small{font-size:14px;color:#718397;margin-top:8px}
 @media(max-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr)}}
-</style></head><body><div class="wrap"><div class="head"><h1>🌈 1인 1역 완료 체크</h1><div class="status" id="status">Firebase 연결 중...</div></div><div class="grid" id="grid"></div></div>
+
+.install-note{margin-top:8px;background:#fff7d7;border:1px solid #ecd17b;border-radius:14px;padding:9px 12px;font-size:12px;color:#725e25;font-weight:900}
+@media (display-mode: standalone){.install-note{display:none}}
+</style></head><body><div class="wrap"><div class="head"><h1>🌈 1인 1역 완료 체크</h1><div class="status" id="status">Firebase 연결 중...</div><div class="install-note">📱 처음 한 번만: Safari 공유 버튼 → <b>홈 화면에 추가</b> → 이후 홈 화면 아이콘으로 실행하세요.</div></div><div class="grid" id="grid"></div></div>
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 <script type="module">
 import { firebaseConfig, CLASS_ID } from "./firebase-config.js";
@@ -80,4 +90,12 @@ if(String(firebaseConfig.apiKey).includes("PASTE_")){status.textContent="⚠️ 
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);await signInAnonymously(auth);const ref=doc(db,"classes",CLASS_ID);
 onSnapshot(ref,snap=>{if(!snap.exists()){status.textContent="선생님 화면에서 Firebase 데이터를 먼저 만들어 주세요.";return}STATE=snap.data().state||{};status.textContent="☁️ 실시간 연결됨 · 자기 이름을 눌러주세요";render()},err=>{console.error(err);status.textContent="⚠️ Firebase 연결 오류"});
 overlay.onclick=e=>{if(e.target===overlay)close()};
-</script></body></html>
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => console.log("SW 등록 실패:", err));
+  });
+}
+</script>
+</body></html>
