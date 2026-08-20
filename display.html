@@ -41,19 +41,19 @@ button{font:inherit;border:0;cursor:pointer;color:inherit}
 .date{font:400 clamp(24px,2vw,31px)/1.15 "Jua",sans-serif;color:#6f81a0}
 .time{font:400 clamp(56px,6vw,92px)/1 "Jua",sans-serif;color:#46668f;margin-top:2px}
 
-.mainlayout{display:grid;grid-template-columns:190px 1fr;gap:12px;margin-top:12px}
+.mainlayout{display:grid;grid-template-columns:210px 1fr;gap:12px;margin-top:12px}
 .navWrap{
  background:rgba(255,255,255,.73);backdrop-filter: blur(10px);
  border-radius:26px;padding:12px;box-shadow:0 14px 32px var(--shadow);border:1px solid rgba(255,255,255,.7)
 }
 .navTitle{
- font:400 clamp(28px,2vw,36px) "Jua",sans-serif;color:#6780a0;margin:2px 4px 10px
+ font:400 clamp(20px,1.45vw,26px) "Jua",sans-serif;color:#6780a0;margin:2px 2px 10px;line-height:1.15;word-break:keep-all
 }
 .nav{display:grid;grid-template-columns:1fr;gap:8px}
 .nav button{
- padding:12px 12px;border-radius:18px;background:rgba(255,255,255,.92);
- box-shadow:0 6px 16px rgba(62,92,136,.09);font:400 clamp(19px,1.65vw,26px) "Jua",sans-serif;
- text-align:left;white-space:nowrap;transition:.16s transform,.16s background,.16s box-shadow
+ padding:11px 10px;border-radius:18px;background:rgba(255,255,255,.92);
+ box-shadow:0 6px 16px rgba(62,92,136,.09);font:400 clamp(16px,1.2vw,21px) "Jua",sans-serif;
+ text-align:left;white-space:normal;line-height:1.2;word-break:keep-all;transition:.16s transform,.16s background,.16s box-shadow
 }
 .nav button:hover{transform:translateY(-1px)}
 .nav button.on{
@@ -63,8 +63,8 @@ button{font:inherit;border:0;cursor:pointer;color:inherit}
  margin-top:12px;border-radius:18px;padding:12px;background:linear-gradient(180deg,#f4fbff,#edf7f6);
  border:1px solid #deebf2
 }
-.progressMini h3{margin:0 0 8px;font:400 clamp(20px,1.5vw,24px) "Jua",sans-serif;color:#62809c}
-.miniStat{display:flex;justify-content:space-between;gap:8px;font-size:16px;font-weight:900;color:#5f7286}
+.progressMini h3{margin:0 0 8px;font:400 clamp(15px,1.05vw,18px) "Jua",sans-serif;color:#62809c;line-height:1.2;word-break:keep-all}
+.miniStat{display:flex;justify-content:space-between;gap:6px;font-size:13px;font-weight:900;color:#5f7286;line-height:1.2}
 .miniBar{margin-top:8px;height:12px;border-radius:999px;background:#dfeaf5;overflow:hidden}
 .miniBar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#7ad28f,#8fd8ff)}
 
@@ -326,7 +326,7 @@ function render(){
  </div>
  <div class="mainlayout">
    <div class="navWrap">
-     <div class="navTitle">난초반 메뉴</div>
+     <div class="navTitle">학생용 메뉴</div>
      <div class="nav">
        ${navBtn("home","🏠 오늘의 안내")}
        ${navBtn("life","📝 생활본")}
