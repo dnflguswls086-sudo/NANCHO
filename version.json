@@ -1,0 +1,7 @@
+{
+  "appVersion": "2026.08.20.1",
+  "dataVersion": 2,
+  "released": "2026-08-20",
+  "migration": "automatic-nondestructive",
+  "notes": "Update-safe Firebase schema foundation"
+}
