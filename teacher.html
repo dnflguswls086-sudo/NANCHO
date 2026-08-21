@@ -107,7 +107,7 @@ function fresh(){
   events:[],
   todos:[{text:"아침 숙제 제출하기",done:false},{text:"다음 수업 준비물 챙기기",done:false}],
   timetable:PERIODS.map((p,i)=>({subject:["국어","수학","과학","사회","음악","체육","창체"][i]||""})),
-  timer:{label:"쉬는시간",duration:600,remaining:600,running:false,lastTick:null}
+  timer:{label:"쉬는시간",duration:600,remaining:600,running:false,lastTick:null,endAt:null}
  };
 }
 function load(){
@@ -193,14 +193,20 @@ function roleAssigned(){return Object.values(S.roleAssignments).flat().map(x=>x.
 function roleDone(){return Object.values(S.roleAssignments).flat().filter(x=>x.done).length;}
 function fmt(sec){sec=Math.max(0,Math.floor(sec||0));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;}
 function timerSync(){
- if(S.timer.running && S.timer.lastTick){
-  const diff=Math.floor((Date.now()-S.timer.lastTick)/1000);
-  if(diff>0){
-    S.timer.remaining=Math.max(0,S.timer.remaining-diff);
-    S.timer.lastTick=Date.now();
-    if(S.timer.remaining<=0){S.timer.running=false;S.timer.remaining=0;}
-    saveLocalOnly();
-  }
+ if(!S.timer)S.timer={label:"타이머",duration:600,remaining:600,running:false,lastTick:null,endAt:null};
+ if(!S.timer.running)return;
+ if(!S.timer.endAt){
+   const rem=Math.max(0,Number(S.timer.remaining||0));
+   S.timer.endAt=Date.now()+rem*1000;
+   S.timer.lastTick=Date.now();
+ }
+ S.timer.remaining=Math.max(0,Math.ceil((Number(S.timer.endAt)-Date.now())/1000));
+ if(S.timer.remaining<=0){
+   S.timer.remaining=0;
+   S.timer.running=false;
+   S.timer.endAt=null;
+   S.timer.lastTick=null;
+   save();
  }
 }
 function hm(hm){const [h,m]=hm.split(":").map(Number);return h*60+m;}
@@ -251,7 +257,7 @@ function render(){
  document.getElementById("app").innerHTML=`
  <div class="head">
   <div><h1>🧑‍🏫 ${esc(S.classConfig?.className||"난초반")} 만능 관리툴</h1><div class="sub">학생용 큰 화면 + 자리배치 + 1인1역 성실도 + 개인기록을 한곳에서 관리</div></div>
-  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.21.2 · 데이터 v4</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
+  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.21.3 · 데이터 v4</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
  </div>
  <div class="tabs">
   ${tabBtn("home","🏠 홈 컨트롤")}
@@ -259,7 +265,6 @@ function render(){
   ${tabBtn("roles","🌈 1인 1역")}
   ${tabBtn("personal","⭐ 개인관리")}
   ${tabBtn("overview","📊 한눈에 보기")}
-  ${tabBtn("random","🎲 랜덤뽑기")}
   ${tabBtn("settings","⚙️ 학급 설정")}
  </div>
  ${view()}`;
@@ -281,7 +286,7 @@ function repairTeacherData(){
  render();
 }
 function tabBtn(id,t){return `<button class="tab ${tab===id?'on':''}" onclick="tab='${id}';render()">${t}</button>`}
-function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():tab==="overview"?overviewView():tab==="random"?randomView():settingsView()}
+function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():tab==="overview"?overviewView():settingsView()}
 
 /* HOME */
 function homeView(){return `<div class="grid"><div>
@@ -743,10 +748,10 @@ function saveRoleSettings(){
 function togglePraise(n){const i=S.praise.students.indexOf(n);if(i>=0)S.praise.students.splice(i,1);else S.praise.students.push(n);save();render()}
 function addTodo(){const e=document.getElementById("todoInput"),v=(e.value||"").trim();if(!v)return;S.todos.push({text:v,done:false});save();render()}
 function preset(sec,label){S.timer={label,duration:sec,remaining:sec,running:false,lastTick:null};save();render()}
-function applyTimer(){const label=document.getElementById("tl").value||"타이머",m=Number(document.getElementById("tm").value||0),s=Number(document.getElementById("ts").value||0),total=Math.max(1,m*60+s);S.timer={label,duration:total,remaining:total,running:false,lastTick:null};save();render()}
-function startTimer(){timerSync();if(S.timer.remaining<=0)S.timer.remaining=S.timer.duration;S.timer.running=true;S.timer.lastTick=Date.now();save();render()}
-function pauseTimer(){timerSync();S.timer.running=false;S.timer.lastTick=null;save();render()}
-function resetTimer(){S.timer.running=false;S.timer.lastTick=null;S.timer.remaining=S.timer.duration;save();render()}
+function applyTimer(){const label=document.getElementById("tl").value||"타이머",m=Number(document.getElementById("tm").value||0),s=Number(document.getElementById("ts").value||0),total=Math.max(1,m*60+s);S.timer={label,duration:total,remaining:total,running:false,lastTick:null,endAt:null};save();render()}
+function startTimer(){timerSync();if(S.timer.remaining<=0)S.timer.remaining=S.timer.duration;S.timer.running=true;S.timer.endAt=Date.now()+Number(S.timer.remaining||S.timer.duration)*1000;S.timer.lastTick=Date.now();save();render()}
+function pauseTimer(){timerSync();S.timer.running=false;S.timer.endAt=null;S.timer.lastTick=null;save();render()}
+function resetTimer(){S.timer.running=false;S.timer.endAt=null;S.timer.lastTick=null;S.timer.remaining=S.timer.duration;save();render()}
 function openDisplay(){window.open('display.html','nanchoDisplay')}
 function backup(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`${S.classConfig?.className||'우리반'}_만능툴_백업.json`;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 

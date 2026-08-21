@@ -188,6 +188,14 @@ h2{
  .nav{grid-template-columns:1fr}
  .rolegrid,.scoregrid,.donegrid,.seats{grid-template-columns:1fr}
 }
+
+.randomWrap{display:grid;gap:12px}.randomGameTabs{display:flex;gap:9px;flex-wrap:wrap}.randomGameTabs button{padding:11px 15px;border-radius:15px;background:#f3f7fb;border:1px solid #dce6ef;font:400 18px "Jua",sans-serif}.randomGameTabs button.on{background:#79a7e9;color:#fff}
+.randomControls{display:flex;gap:7px;flex-wrap:wrap}.randomControls button{padding:8px 11px;border-radius:12px;background:#fff;border:1px solid #dce6ef;font-weight:900}.randomRoster2{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.randomRoster2 button{padding:9px 5px;border-radius:12px;background:#f6f9fc;border:1px solid #e0e9f1;font-weight:900}.randomRoster2 button.on{background:#e4f0ff;border-color:#9bbdea}.randomRoster2 button.ex{opacity:.38;text-decoration:line-through}
+.randomStage2{min-height:390px;border-radius:20px;padding:15px;background:linear-gradient(180deg,#f8fbff,#eef6ff);border:1px solid #dce7f1}.randomResult2{text-align:center;padding:14px;border-radius:17px;background:#fff4d4;border:2px solid #ead17c;font:400 clamp(28px,2.8vw,42px) "Jua",sans-serif}
+.stickGrid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(65px,1fr));gap:13px;align-items:end;min-height:285px;padding:18px}.stick2{height:220px;border-radius:28px 28px 12px 12px;background:linear-gradient(90deg,#bd7b42,#eab56f,#ad6936);cursor:pointer;display:flex;align-items:flex-end;padding:9px;transition:.2s}.stick2:hover{transform:translateY(-8px)}.stick2.revealed{transform:translateY(-24px);background:linear-gradient(90deg,#73a8dc,#a4cff8,#6693c0)}.stick2 span{visibility:hidden;width:100%;text-align:center;background:white;padding:7px 3px;border-radius:9px;font-weight:900}.stick2.revealed span{visibility:visible}
+.balloonGrid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:14px;padding:12px}.balloon2{height:135px;border-radius:50%;border:0;font-size:38px;cursor:pointer;box-shadow:inset -8px -10px 18px rgba(70,90,120,.1),0 7px 14px rgba(60,80,110,.1)}.balloon2.popped{background:#fff!important;border:2px dashed #b8cada;font-size:18px;font-weight:900}
+.ladderScroll2{overflow-x:auto}.ladderBoard2{position:relative;margin:auto;min-height:390px;background:#fff;border:1px solid #dce7f1;border-radius:18px;padding:52px 20px}.ladderNames2,.ladderBottom2{position:absolute;left:20px;right:20px;display:grid;text-align:center;font-weight:900}.ladderNames2{top:10px}.ladderBottom2{bottom:10px}.ladderNames2 button{border:0;background:#edf5ff;border-radius:9px;padding:6px 3px;font-size:13px;font-weight:900}.ladderSvg2{position:absolute;left:20px;right:20px;top:48px;bottom:48px;width:calc(100% - 40px);height:calc(100% - 96px)}.ladderLine2{stroke:#8fa7bf;stroke-width:3}.ladderRung2{stroke:#6f9ee8;stroke-width:4}.ladderPath2{stroke:#ef9c42;stroke-width:8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
 </style></head><body><div class="wrap" id="app"></div>
 <script>
 const DEFAULT_STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
@@ -228,7 +236,7 @@ function fresh(){
   events:[],
   todos:[{text:"아침 숙제 제출하기",done:false},{text:"다음 수업 준비물 챙기기",done:false}],
   timetable:PERIODS.map((p,i)=>({subject:["국어","수학","과학","사회","음악","체육","창체"][i]||""})),
-  timer:{label:"쉬는시간",duration:600,remaining:600,running:false,lastTick:null}
+  timer:{label:"쉬는시간",duration:600,remaining:600,running:false,lastTick:null,endAt:null}
  };
 }
 function load(){
@@ -279,14 +287,18 @@ function roleAssigned(){return Object.values(S.roleAssignments).flat().map(x=>x.
 function roleDone(){return Object.values(S.roleAssignments).flat().filter(x=>x.done).length;}
 function fmt(sec){sec=Math.max(0,Math.floor(sec||0));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;}
 function timerSync(){
- if(S.timer.running && S.timer.lastTick){
-  const diff=Math.floor((Date.now()-S.timer.lastTick)/1000);
-  if(diff>0){
-    S.timer.remaining=Math.max(0,S.timer.remaining-diff);
-    S.timer.lastTick=Date.now();
-    if(S.timer.remaining<=0){S.timer.running=false;S.timer.remaining=0;}
-    save();
-  }
+ if(!S.timer)return;
+ if(S.timer.running){
+   if(S.timer.endAt){
+     S.timer.remaining=Math.max(0,Math.ceil((Number(S.timer.endAt)-Date.now())/1000));
+   }else if(S.timer.lastTick){
+     const diff=Math.max(0,Math.floor((Date.now()-Number(S.timer.lastTick))/1000));
+     S.timer.remaining=Math.max(0,Number(S.timer.remaining||0)-diff);
+   }
+   if(S.timer.remaining<=0){
+     S.timer.remaining=0;
+     S.timer.running=false;
+   }
  }
 }
 function hm(hm){const [h,m]=hm.split(":").map(Number);return h*60+m;}
@@ -320,6 +332,9 @@ function monthBirthdays(){
    .sort((a,b)=>S.birthdays[a].localeCompare(S.birthdays[b]));
 }
 let S=load(), interval=null, page="home";
+let rgGame="sticks",rgSelected=new Set(),rgExcluded=new Set(),rgExcludePicked=true;
+let rgSticks=[],rgBalloons=[],rgLadder=null,rgMessage="";
+
 function render(){
  timerSync();
  const ps=periodStatus(), bdays=todayBirthdays(), mb=monthBirthdays();
@@ -350,6 +365,7 @@ function render(){
        ${navBtn("scores","⭐ 점수표")}
        ${navBtn("done","✅ 역할 완료")}
        ${navBtn("seats","🪑 자리배치")}
+     ${navBtn("random","🎲 랜덤뽑기")}
      </div>
      <div class="progressMini">
        <h3>오늘의 진행 현황</h3>
@@ -368,6 +384,7 @@ function pageView(ps,mb){
  if(page==="scores")return scoresPage();
  if(page==="done")return donePage();
  if(page==="seats")return seatsPage();
+ if(page==="random")return randomPage();
  return homePage(mb);
 }
 
@@ -455,13 +472,37 @@ function seatsPage(){
  return `<div><h2>🪑 난초반 자리배치표</h2><div class="seatpage"><div class="board">칠 판 · 선 생 님</div><div class="seats">${S.seats.map((n,i)=>`<div class="seat"><div class="seatname">${esc(n)}</div><div class="seatrole">${i+1}번 자리 · ${esc(roleOf(n))}</div></div>`).join("")}</div></div></div>`;
 }
 
+
+function rgSync(){const valid=new Set(STUDENTS);rgSelected=new Set([...rgSelected].filter(n=>valid.has(n)));rgExcluded=new Set([...rgExcluded].filter(n=>valid.has(n)));if(!rgSelected.size)STUDENTS.forEach(n=>rgSelected.add(n))}
+function rgActive(){rgSync();return STUDENTS.filter(n=>rgSelected.has(n)&&!rgExcluded.has(n))}
+function rgShuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function rgClear(){rgSticks=[];rgBalloons=[];rgLadder=null}
+function randomPage(){rgSync();const active=rgActive();return `<div class="randomWrap">
+<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h2>🎲 랜덤뽑기</h2><div class="randomGameTabs">${rgBtn("sticks","🥢 막대기 뽑기")}${rgBtn("ladder","🪜 사다리타기")}${rgBtn("balloon","🎈 풍선 터트리기")}</div></div><div class="randomControls"><button onclick="rgExcludePicked=!rgExcludePicked;render()">${rgExcludePicked?"✅":"⬜"} 뽑힌 학생 제외</button><button onclick="rgReset()">🔄 초기화</button></div></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><b>참가 학생 ${active.length}명</b><div class="randomControls"><button onclick="rgAll(true)">전체 선택</button><button onclick="rgAll(false)">전체 해제</button><button onclick="rgExcluded.clear();rgClear();render()">제외 복귀</button></div></div><div class="randomRoster2" style="margin-top:10px">${STUDENTS.map(n=>`<button class="${rgSelected.has(n)?'on':''} ${rgExcluded.has(n)?'ex':''}" onclick="rgToggle('${n}')">${esc(n)}</button>`).join("")}</div></div>
+<div class="randomStage2">${rgGameView(active)}</div><div class="randomResult2">${rgMessage||"하나 골라볼까요? 😊"}</div></div>`}
+function rgBtn(id,t){return `<button class="${rgGame===id?'on':''}" onclick="rgGame='${id}';rgMessage='';rgClear();render()">${t}</button>`}
+function rgToggle(n){rgSelected.has(n)?rgSelected.delete(n):rgSelected.add(n);rgExcluded.delete(n);rgMessage="";rgClear();render()}
+function rgAll(v){rgSelected=new Set(v?STUDENTS:[]);rgExcluded.clear();rgMessage="";rgClear();render()}
+function rgReset(){rgSelected=new Set(STUDENTS);rgExcluded.clear();rgExcludePicked=true;rgMessage="";rgClear();render()}
+function rgGameView(a){if(!a.length)return `<div class="randomHint">참가할 학생을 선택해 주세요.</div>`;return rgGame==="ladder"?rgLadderView(a):rgGame==="balloon"?rgBalloonView(a):rgStickView(a)}
+function rgStickView(a){const k=[...a].sort().join("|");if(rgSticks._key!==k){rgSticks=rgShuffle(a).map(name=>({name,revealed:false}));rgSticks._key=k}return `<div class="randomHint">막대기 하나를 골라 주세요!</div><div class="stickGrid2">${rgSticks.map((s,i)=>`<div class="stick2 ${s.revealed?'revealed':''}" onclick="rgPickStick(${i})"><span>${s.revealed?esc(s.name):"?"}</span></div>`).join("")}</div>`}
+function rgPickStick(i){const s=rgSticks[i];if(!s||s.revealed)return;s.revealed=true;rgMessage=`🥢 ${s.name} 당첨!`;if(rgExcludePicked)rgExcluded.add(s.name);render()}
+const RG_COLORS=["#ffd8d8","#ffe4b8","#dcf0bd","#d2e9ff","#ddd9ff","#cfeee8"];
+function rgBalloonView(a){const k=[...a].sort().join("|");if(rgBalloons._key!==k){rgBalloons=rgShuffle(a).map((name,i)=>({name,popped:false,color:RG_COLORS[i%RG_COLORS.length]}));rgBalloons._key=k}return `<div class="randomHint">마음에 드는 풍선을 터뜨려 보세요!</div><div class="balloonGrid2">${rgBalloons.map((b,i)=>`<button class="balloon2 ${b.popped?'popped':''}" style="background:${b.color}" onclick="rgPop(${i})">${b.popped?`💥<br>${esc(b.name)}`:"🎈"}</button>`).join("")}</div>`}
+function rgPop(i){const b=rgBalloons[i];if(!b||b.popped)return;b.popped=true;rgMessage=`🎈 ${b.name} 당첨!`;if(rgExcludePicked)rgExcluded.add(b.name);render()}
+function rgBuildLadder(a){const names=rgShuffle(a),n=names.length,rows=Math.max(8,Math.min(14,n+4)),rungs=[];for(let r=0;r<rows;r++){let c=Math.floor(Math.random()*2);while(c<n-1){if(Math.random()<.5){rungs.push({row:r,col:c});c+=2}else c++}}rgLadder={key:[...a].sort().join("|"),names,rows,rungs,winnerBottom:Math.floor(Math.random()*n),path:null}}
+function rgLadderPath(start){const n=rgLadder.names.length,x=c=>40+c*920/(n-1),y=r=>20+r*240/rgLadder.rows;let col=start,pts=[[x(col),0],[x(col),20]];for(let r=0;r<rgLadder.rows;r++){const yy=y(r+.5);pts.push([x(col),yy]);const l=rgLadder.rungs.some(a=>a.row===r&&a.col===col-1),rr=rgLadder.rungs.some(a=>a.row===r&&a.col===col);if(l){col--;pts.push([x(col),yy])}else if(rr){col++;pts.push([x(col),yy])}}pts.push([x(col),280]);return {points:pts.map(p=>p.join(",")).join(" "),end:col}}
+function rgLadderView(a){const k=[...a].sort().join("|");if(!rgLadder||rgLadder.key!==k)rgBuildLadder(a);const n=rgLadder.names.length;if(n===1)return `<div class="randomResult2">🎉 ${esc(a[0])}</div>`;const width=Math.max(760,n*78),cols=`repeat(${n},1fr)`,x=c=>40+c*920/(n-1);let lines="",rungs="";for(let c=0;c<n;c++)lines+=`<line class="ladderLine2" x1="${x(c)}" y1="0" x2="${x(c)}" y2="280"/>`;rgLadder.rungs.forEach(a=>{const yy=20+(a.row+.5)*240/rgLadder.rows;rungs+=`<line class="ladderRung2" x1="${x(a.col)}" y1="${yy}" x2="${x(a.col+1)}" y2="${yy}"/>`});const path=rgLadder.path?`<polyline class="ladderPath2" points="${rgLadder.path}"/>`:"";return `<div class="randomHint">이름을 눌러 사다리를 출발시켜 보세요!</div><div class="ladderScroll2"><div class="ladderBoard2" style="width:${width}px"><div class="ladderNames2" style="grid-template-columns:${cols}">${rgLadder.names.map((n,i)=>`<button onclick="rgRun(${i})">${esc(n)}</button>`).join("")}</div><svg class="ladderSvg2" viewBox="0 0 1000 280" preserveAspectRatio="none">${lines}${rungs}${path}</svg><div class="ladderBottom2" style="grid-template-columns:${cols}">${rgLadder.names.map((_,i)=>`<div>${i===rgLadder.winnerBottom?"🎉 당첨":"○"}</div>`).join("")}</div></div></div>`}
+function rgRun(i){const r=rgLadderPath(i),name=rgLadder.names[i],win=r.end===rgLadder.winnerBottom;rgLadder.path=r.points;rgMessage=win?`🎉 ${name} 당첨!`:`🙂 ${name}은(는) 이번엔 통과!`;if(win&&rgExcludePicked)rgExcluded.add(name);render()}
+
 window.addEventListener("storage",()=>{S=load();render()});
 window.addEventListener("nancho-cloud-update",()=>{S=load();render()});
 window.addEventListener("nancho-cloud-status",(e)=>{
   console.log(e.detail?.text||"");
 });
 render();
-interval=setInterval(()=>{S=load();render()},1000);
+interval=setInterval(()=>{render()},250);
 </script>
 <script>window.NANCHO_FIREBASE_MODE="display";</script>
 <script type="module" src="firebase-bridge.js"></script>
