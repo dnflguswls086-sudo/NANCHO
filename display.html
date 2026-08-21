@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>난초반 학생용 SECTIONS</title><style>
+<title>난초반 학생용 · V7 FAST</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap');
 :root{
  --ink:#32465f; --sub:#6e7f96; --line:#dbe7f1; --shadow:rgba(62,92,136,.14);
@@ -20,7 +20,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit}
 .top{
  display:grid;grid-template-columns:1.25fr auto;gap:14px;align-items:center;
  padding:16px 18px;border-radius:28px;background:rgba(255,255,255,.78);
- backdrop-filter: blur(10px);box-shadow:0 16px 40px var(--shadow);border:1px solid rgba(255,255,255,.75)
+ backdrop-filter: blur(6px);box-shadow:0 16px 40px var(--shadow);border:1px solid rgba(255,255,255,.75)
 }
 .heroTitle{display:grid;gap:10px}
 .title{
@@ -43,7 +43,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit}
 
 .mainlayout{display:grid;grid-template-columns:210px 1fr;gap:12px;margin-top:12px}
 .navWrap{
- background:rgba(255,255,255,.73);backdrop-filter: blur(10px);
+ background:rgba(255,255,255,.82);backdrop-filter: blur(5px);
  border-radius:26px;padding:12px;box-shadow:0 14px 32px var(--shadow);border:1px solid rgba(255,255,255,.7)
 }
 .navTitle{
@@ -69,7 +69,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit}
 .miniBar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#7ad28f,#8fd8ff)}
 
 .page{
- background:rgba(255,255,255,.8);backdrop-filter: blur(10px);
+ background:rgba(255,255,255,.88);backdrop-filter: blur(5px);
  border-radius:28px;padding:14px;box-shadow:0 16px 38px var(--shadow);
  min-height:calc(100vh - 162px);border:1px solid rgba(255,255,255,.75)
 }
@@ -496,13 +496,48 @@ function rgLadderPath(start){const n=rgLadder.names.length,x=c=>40+c*920/(n-1),y
 function rgLadderView(a){const k=[...a].sort().join("|");if(!rgLadder||rgLadder.key!==k)rgBuildLadder(a);const n=rgLadder.names.length;if(n===1)return `<div class="randomResult2">🎉 ${esc(a[0])}</div>`;const width=Math.max(760,n*78),cols=`repeat(${n},1fr)`,x=c=>40+c*920/(n-1);let lines="",rungs="";for(let c=0;c<n;c++)lines+=`<line class="ladderLine2" x1="${x(c)}" y1="0" x2="${x(c)}" y2="280"/>`;rgLadder.rungs.forEach(a=>{const yy=20+(a.row+.5)*240/rgLadder.rows;rungs+=`<line class="ladderRung2" x1="${x(a.col)}" y1="${yy}" x2="${x(a.col+1)}" y2="${yy}"/>`});const path=rgLadder.path?`<polyline class="ladderPath2" points="${rgLadder.path}"/>`:"";return `<div class="randomHint">이름을 눌러 사다리를 출발시켜 보세요!</div><div class="ladderScroll2"><div class="ladderBoard2" style="width:${width}px"><div class="ladderNames2" style="grid-template-columns:${cols}">${rgLadder.names.map((n,i)=>`<button onclick="rgRun(${i})">${esc(n)}</button>`).join("")}</div><svg class="ladderSvg2" viewBox="0 0 1000 280" preserveAspectRatio="none">${lines}${rungs}${path}</svg><div class="ladderBottom2" style="grid-template-columns:${cols}">${rgLadder.names.map((_,i)=>`<div>${i===rgLadder.winnerBottom?"🎉 당첨":"○"}</div>`).join("")}</div></div></div>`}
 function rgRun(i){const r=rgLadderPath(i),name=rgLadder.names[i],win=r.end===rgLadder.winnerBottom;rgLadder.path=r.points;rgMessage=win?`🎉 ${name} 당첨!`:`🙂 ${name}은(는) 이번엔 통과!`;if(win&&rgExcludePicked)rgExcluded.add(name);render()}
 
+
+let lastRenderedDateKey="";
+function lightTick(){
+ // 전체 화면을 다시 만들지 않고 시계/타이머 숫자만 갱신합니다.
+ const now=new Date();
+ const clock=document.getElementById("liveClock");
+ if(clock)clock.textContent=now.toLocaleTimeString("ko-KR",{hour12:false});
+
+ const date=document.getElementById("liveDate");
+ const dateKey=`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+ if(date && lastRenderedDateKey!==dateKey){
+   date.textContent=now.toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
+   lastRenderedDateKey=dateKey;
+ }
+
+ if(S?.timer?.running){
+   if(S.timer.endAt){
+     S.timer.remaining=Math.max(0,Math.ceil((Number(S.timer.endAt)-Date.now())/1000));
+   }else if(S.timer.lastTick){
+     const diff=Math.max(0,Math.floor((Date.now()-Number(S.timer.lastTick))/1000));
+     S.timer.remaining=Math.max(0,Number(S.timer.remaining||0)-diff);
+   }
+   if(S.timer.remaining<=0){
+     S.timer.remaining=0;
+     S.timer.running=false;
+   }
+ }
+
+ const timer=document.getElementById("liveTimer");
+ if(timer)timer.textContent=fmt(S?.timer?.remaining||0);
+ const state=document.getElementById("liveTimerState");
+ if(state)state.textContent=S?.timer?.running?"진행 중":"대기 중";
+}
+
 window.addEventListener("storage",()=>{S=load();render()});
 window.addEventListener("nancho-cloud-update",()=>{S=load();render()});
 window.addEventListener("nancho-cloud-status",(e)=>{
   console.log(e.detail?.text||"");
 });
 render();
-interval=setInterval(()=>{render()},250);
+lightTick();
+interval=setInterval(lightTick,250);
 </script>
 <script>window.NANCHO_FIREBASE_MODE="display";</script>
 <script type="module" src="firebase-bridge.js"></script>
