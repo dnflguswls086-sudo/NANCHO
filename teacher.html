@@ -42,12 +42,37 @@ h1{font:700 43px Gaegu,cursive;margin:0}.sub{font-size:12px;color:#7a8898}.actio
 .settingHint{font-size:12px;color:#718296;line-height:1.5}
 @media(max-width:900px){.settingsGrid{grid-template-columns:1fr}.roleEditRow{grid-template-columns:54px 1fr 70px auto}}
 
+
+/* RANDOM PICKER */
+.randomWrap{display:grid;gap:12px}.randomTop{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.randomGames{display:flex;flex-wrap:wrap;gap:8px}.gameBtn{padding:12px 16px;border-radius:15px;background:#f3f7fb;border:2px solid #dce7f1;font-weight:900;cursor:pointer}.gameBtn.on{background:#6f9ee8;color:#fff;border-color:#6f9ee8}
+.randomOptions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.toggleBtn{padding:9px 12px;border-radius:13px;background:#fff;border:1px solid #dce5ee;font-weight:900}.toggleBtn.on{background:#e9f7ed;border-color:#9bd1aa;color:#2f7044}
+.randomRoster{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.randomPerson{padding:8px 6px;border-radius:11px;background:#f5f8fc;border:1px solid #e1e9f2;font-weight:900;cursor:pointer}.randomPerson.on{background:#e6f2ff;border-color:#91b9ec;color:#315f98}.randomPerson.off{opacity:.38;text-decoration:line-through}
+.randomStage{min-height:420px;border-radius:22px;padding:18px;background:linear-gradient(180deg,#f8fbff,#eef6ff);border:1px solid #dce9f4;overflow:auto}.randomHint{text-align:center;color:#71849a;font-weight:900;margin:4px 0 14px}
+.randomResult{margin-top:14px;text-align:center;padding:15px;border-radius:18px;background:#fff7d9;border:2px solid #eed47d;font-size:34px;font-weight:900;color:#6b5621;min-height:70px}
+.stickGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:14px;align-items:end;min-height:300px;padding:20px}.stick{position:relative;height:230px;border-radius:28px 28px 14px 14px;background:linear-gradient(90deg,#c9894c,#edbb79,#b8763e);box-shadow:inset 0 0 0 2px rgba(117,68,30,.18),0 8px 12px rgba(73,63,50,.12);cursor:pointer;transition:.2s transform,.2s opacity;display:flex;align-items:flex-end;justify-content:center;padding:10px}.stick:hover{transform:translateY(-10px)}.stick.revealed{transform:translateY(-26px);background:linear-gradient(90deg,#78b3ed,#a8d3ff,#6599d0)}.stickName{background:#fff;border-radius:10px;padding:7px 5px;font-weight:900;font-size:15px;width:100%;text-align:center}.stick:not(.revealed) .stickName{visibility:hidden}
+.balloonGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:14px;padding:10px}.balloon{height:135px;border-radius:50% 50% 47% 47%;position:relative;border:0;cursor:pointer;font-size:40px;box-shadow:inset -8px -10px 20px rgba(80,92,120,.12),0 8px 15px rgba(60,80,110,.12);transition:.18s transform}.balloon:hover{transform:translateY(-5px) scale(1.03)}.balloon:after{content:"";position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);border-left:9px solid transparent;border-right:9px solid transparent;border-top:15px solid #8da9cb}.balloon.popped{animation:popBalloon .35s ease forwards}.balloonName{font-size:18px;font-weight:900;color:#344e6d;display:none}.balloon.popped .balloonName{display:block}@keyframes popBalloon{50%{transform:scale(1.2)}100%{transform:scale(.92);background:#fff!important;box-shadow:none;border:2px dashed #b9ccdf}}
+.ladderScroll{overflow-x:auto;padding-bottom:8px}.ladderBoard{position:relative;margin:0 auto;min-height:390px;background:#fff;border-radius:18px;border:1px solid #dce7f1;padding:52px 20px 56px}.ladderNames,.ladderResults{position:absolute;left:20px;right:20px;display:grid;text-align:center;font-weight:900}.ladderNames{top:10px}.ladderResults{bottom:10px}.ladderNameBtn{border:0;background:#edf5ff;border-radius:9px;padding:6px 3px;font-size:13px;font-weight:900;cursor:pointer}.ladderNameBtn:hover{background:#d9eaff}.ladderSvg{position:absolute;left:20px;right:20px;top:48px;bottom:48px;width:calc(100% - 40px);height:calc(100% - 96px)}.ladderLine{stroke:#8fa7bf;stroke-width:3}.ladderRung{stroke:#6f9ee8;stroke-width:4}.ladderPath{stroke:#ef9c42;stroke-width:8;fill:none;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 3px rgba(80,60,20,.18))}
+.excludedBox{font-size:13px;color:#73869a;line-height:1.5}.excludedTag{display:inline-block;margin:3px;padding:4px 7px;border-radius:999px;background:#eef2f6;color:#66798c;font-weight:900}
+@media(max-width:950px){.randomTop{grid-template-columns:1fr}.randomRoster{grid-template-columns:repeat(4,1fr)}}
+
 </style></head><body><div class="wrap" id="app"></div>
 <script>
 const DEFAULT_STUDENTS = ["강승효", "김동윤", "김주원", "양지완", "이서준", "이영현", "이이안", "이지환", "이호진", "정민준", "정윤후", "하이준", "고서진", "김리재", "박나윤", "박서은", "송윤하", "이가빈", "임엘린", "정단우", "정이현", "조서윤", "최인아", "김나현"];
 const DEFAULT_ROLES = [{"name": "급식", "count": 4, "emoji": "🍱"}, {"name": "뒷정리 도우미", "count": 2, "emoji": "🧽"}, {"name": "시간표", "count": 1, "emoji": "🗓️"}, {"name": "태블릿(고정자리)", "count": 2, "emoji": "💻"}, {"name": "연필깎이", "count": 1, "emoji": "✏️"}, {"name": "에어컨담당", "count": 1, "emoji": "❄️"}, {"name": "공기청정기", "count": 1, "emoji": "🌿"}, {"name": "우유", "count": 2, "emoji": "🥛"}, {"name": "물티슈&휴지", "count": 1, "emoji": "🧻"}, {"name": "경기어린이", "count": 2, "emoji": "📰"}, {"name": "칠판지우기", "count": 1, "emoji": "🧹"}, {"name": "심부름", "count": 1, "emoji": "📨"}, {"name": "도서정리", "count": 1, "emoji": "📚"}, {"name": "일반시민", "count": 2, "emoji": "🙂"}, {"name": "문집정리", "count": 2, "emoji": "📘"}].map((r,i)=>({...r,id:`role-${String(i+1).padStart(3,"0")}`}));
 let STUDENTS = [...DEFAULT_STUDENTS];
 let ROLES = DEFAULT_ROLES.map(r=>({...r}));
+
+// 랜덤뽑기 상태는 Firebase에 저장하지 않는 일회성 게임 상태입니다.
+let randomGame="sticks";
+let randomSelected=new Set();
+let randomExcluded=new Set();
+let randomExcludePicked=true;
+let stickAssignments=[];
+let balloonAssignments=[];
+let ladderState=null;
+let randomMessage="";
+
 const KEY = "nancho-dual-master-plus-v1";
 const PERIODS = [
  {label:"1교시",start:"08:40",end:"09:20"},
@@ -226,7 +251,7 @@ function render(){
  document.getElementById("app").innerHTML=`
  <div class="head">
   <div><h1>🧑‍🏫 ${esc(S.classConfig?.className||"난초반")} 만능 관리툴</h1><div class="sub">학생용 큰 화면 + 자리배치 + 1인1역 성실도 + 개인기록을 한곳에서 관리</div></div>
-  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.21.1 · 데이터 v4</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
+  <div class="actions"><span id="cloudStatus" class="btn">${cloudStatusOk?"☁️":"⚠️"} ${esc(cloudStatusText)}</span><span id="versionStatus" class="btn">앱 2026.08.21.2 · 데이터 v4</span><button class="btn blue" onclick="openDisplay()">👀 학생용 화면</button><button class="btn green" onclick="window.open('check.html','nanchoCheck')">📱 iPad 체크</button><button class="btn yellow" onclick="window.open('pins.html','nanchoPins')">🔐 PIN 관리</button><button class="btn purple" onclick="backup()">💾 백업</button></div>
  </div>
  <div class="tabs">
   ${tabBtn("home","🏠 홈 컨트롤")}
@@ -234,6 +259,7 @@ function render(){
   ${tabBtn("roles","🌈 1인 1역")}
   ${tabBtn("personal","⭐ 개인관리")}
   ${tabBtn("overview","📊 한눈에 보기")}
+  ${tabBtn("random","🎲 랜덤뽑기")}
   ${tabBtn("settings","⚙️ 학급 설정")}
  </div>
  ${view()}`;
@@ -255,7 +281,7 @@ function repairTeacherData(){
  render();
 }
 function tabBtn(id,t){return `<button class="tab ${tab===id?'on':''}" onclick="tab='${id}';render()">${t}</button>`}
-function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():tab==="overview"?overviewView():settingsView()}
+function view(){return tab==="home"?homeView():tab==="seats"?seatsView():tab==="roles"?rolesView():tab==="personal"?personalView():tab==="overview"?overviewView():tab==="random"?randomView():settingsView()}
 
 /* HOME */
 function homeView(){return `<div class="grid"><div>
@@ -337,6 +363,179 @@ function deleteRoleReview(n,i){
 /* OVERVIEW */
 function overviewView(){const ranks=[...STUDENTS].sort((a,b)=>S.points[b]-S.points[a]);const warns=[...STUDENTS].filter(n=>S.warnings[n]>0).sort((a,b)=>S.warnings[b]-S.warnings[a]);const rr=[...STUDENTS].map(n=>{const a=S.roleReviews[n]||[];return {n,c:a.length,avg:a.length?a.reduce((x,y)=>x+Number(y.value||0),0)/a.length:0}}).sort((a,b)=>b.avg-a.avg||b.c-a.c);return `<div class="ovgrid"><div class="card"><h2>🏆 개인 점수</h2>${ranks.map((n,i)=>`<div class="rankrow"><span class="num">${i+1}</span><b>${n}</b><span class="score">${S.points[n]}점</span></div>`).join("")}</div><div><div class="card"><h2>🌈 역할 성실도</h2>${rr.map((x,i)=>`<div class="reviewrank"><span class="num">${i+1}</span><b>${x.n}</b><span class="tiny">${x.c}회 평가</span><span class="score">${x.c?x.avg.toFixed(1):"-"} / 2</span></div>`).join("")}</div><div class="card"><h2>⚠️ 경고 현황</h2>${warns.length?warns.map(n=>`<div class="warnrow"><b>${n}</b><span class="score">${S.warnings[n]}회</span></div>`).join(""):"현재 경고 없음 🌸"}</div></div></div>`}
 
+
+
+/* RANDOM PICKER */
+function syncRandomRoster(){
+ const valid=new Set(STUDENTS);
+ randomSelected=new Set([...randomSelected].filter(n=>valid.has(n)));
+ randomExcluded=new Set([...randomExcluded].filter(n=>valid.has(n)));
+ if(randomSelected.size===0)STUDENTS.forEach(n=>randomSelected.add(n));
+}
+function activeRandomStudents(){
+ syncRandomRoster();
+ return STUDENTS.filter(n=>randomSelected.has(n)&&!randomExcluded.has(n));
+}
+function shuffle(arr){
+ const a=[...arr];
+ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+ return a;
+}
+function randomView(){
+ syncRandomRoster();
+ const active=activeRandomStudents();
+ return `<div class="randomWrap">
+   <div class="card randomTop">
+    <div>
+      <h2>🎲 랜덤뽑기</h2>
+      <div class="randomGames">
+        ${gameButton("sticks","🥢 막대기 고르기")}
+        ${gameButton("ladder","🪜 사다리타기")}
+        ${gameButton("balloon","🎈 풍선 터트리기")}
+      </div>
+    </div>
+    <div class="randomOptions">
+      <button class="toggleBtn ${randomExcludePicked?'on':''}" onclick="randomExcludePicked=!randomExcludePicked;render()">${randomExcludePicked?'✅':'⬜'} 뽑힌 학생 제외</button>
+      <button class="btn" onclick="resetRandomAll()">🔄 전체 초기화</button>
+    </div>
+   </div>
+
+   <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+      <h2 style="margin:0">👥 참가 학생 <span style="font-size:14px;color:#728399">${active.length}명 참여 가능</span></h2>
+      <div class="actions"><button class="btn" onclick="selectAllRandom(true)">전체 선택</button><button class="btn" onclick="selectAllRandom(false)">전체 해제</button><button class="btn yellow" onclick="clearRandomExcluded()">제외 학생 복귀</button></div>
+    </div>
+    <div class="randomRoster" style="margin-top:10px">${STUDENTS.map(n=>`<button class="randomPerson ${randomSelected.has(n)?'on':''} ${randomExcluded.has(n)?'off':''}" onclick="toggleRandomStudent('${n}')">${esc(n)}</button>`).join("")}</div>
+    ${randomExcluded.size?`<div class="excludedBox" style="margin-top:10px"><b>이번 뽑기에서 제외:</b> ${[...randomExcluded].map(n=>`<span class="excludedTag">${esc(n)}</span>`).join("")}</div>`:""}
+   </div>
+
+   <div class="randomStage">${randomGameView(active)}</div>
+   <div class="randomResult" id="randomResult">${randomMessage||"게임을 시작해 주세요!"}</div>
+ </div>`;
+}
+function gameButton(id,label){return `<button class="gameBtn ${randomGame===id?'on':''}" onclick="setRandomGame('${id}')">${label}</button>`}
+function setRandomGame(id){randomGame=id;randomMessage="";stickAssignments=[];balloonAssignments=[];ladderState=null;render()}
+function toggleRandomStudent(n){
+ if(randomSelected.has(n))randomSelected.delete(n);else randomSelected.add(n);
+ randomExcluded.delete(n);stickAssignments=[];balloonAssignments=[];ladderState=null;randomMessage="";render();
+}
+function selectAllRandom(on){randomSelected=new Set(on?STUDENTS:[]);randomExcluded.clear();stickAssignments=[];balloonAssignments=[];ladderState=null;randomMessage="";render()}
+function clearRandomExcluded(){randomExcluded.clear();stickAssignments=[];balloonAssignments=[];ladderState=null;randomMessage="";render()}
+function resetRandomAll(){randomSelected=new Set(STUDENTS);randomExcluded.clear();randomExcludePicked=true;stickAssignments=[];balloonAssignments=[];ladderState=null;randomMessage="";render()}
+function randomGameView(active){
+ if(active.length===0)return `<div class="randomHint">참가할 학생을 한 명 이상 선택해 주세요.</div>`;
+ if(randomGame==="ladder")return ladderView(active);
+ if(randomGame==="balloon")return balloonView(active);
+ return sticksView(active);
+}
+
+// 막대기
+function ensureSticks(active){
+ const key=[...active].sort().join("|");
+ if(stickAssignments._key!==key){
+   stickAssignments=shuffle(active).map((name,i)=>({id:i,name,revealed:false}));
+   stickAssignments._key=key;
+ }
+}
+function sticksView(active){
+ ensureSticks(active);
+ return `<div class="randomHint">막대기 하나를 눌러 보세요. 끝까지 올라오면 이름이 공개돼요!</div>
+ <div class="stickGrid">${stickAssignments.map((s,i)=>`<div class="stick ${s.revealed?'revealed':''}" onclick="pickStick(${i})"><div class="stickName">${s.revealed?esc(s.name):"?"}</div></div>`).join("")}</div>`;
+}
+function pickStick(i){
+ const s=stickAssignments[i];if(!s||s.revealed)return;
+ s.revealed=true;randomMessage=`🥢 ${s.name} 당첨!`;
+ if(randomExcludePicked)randomExcluded.add(s.name);
+ render();
+}
+
+// 풍선
+const BALLOON_COLORS=["#ffd5d5","#ffe2aa","#d9efb8","#cfe8ff","#ddd5ff","#cdeee7"];
+function ensureBalloons(active){
+ const key=[...active].sort().join("|");
+ if(balloonAssignments._key!==key){
+   balloonAssignments=shuffle(active).map((name,i)=>({id:i,name,popped:false,color:BALLOON_COLORS[i%BALLOON_COLORS.length]}));
+   balloonAssignments._key=key;
+ }
+}
+function balloonView(active){
+ ensureBalloons(active);
+ return `<div class="randomHint">마음에 드는 풍선을 터뜨려 보세요 🎈</div><div class="balloonGrid">${balloonAssignments.map((b,i)=>`<button class="balloon ${b.popped?'popped':''}" style="background:${b.color}" onclick="popBalloon(${i})">${b.popped?`<span class="balloonName">💥<br>${esc(b.name)}</span>`:"🎈"}</button>`).join("")}</div>`;
+}
+function popBalloon(i){
+ const b=balloonAssignments[i];if(!b||b.popped)return;
+ b.popped=true;randomMessage=`🎈 펑! ${b.name} 당첨!`;
+ if(randomExcludePicked)randomExcluded.add(b.name);
+ render();
+}
+
+// 사다리
+function buildLadder(active){
+ const names=shuffle(active);
+ const n=names.length, rows=Math.max(8,Math.min(14,n+4));
+ const rungs=[];
+ for(let r=0;r<rows;r++){
+   let c=Math.floor(Math.random()*2);
+   while(c<n-1){
+     if(Math.random()<0.5){rungs.push({row:r,col:c});c+=2}else c+=1;
+   }
+ }
+ const winnerBottom=Math.floor(Math.random()*n);
+ ladderState={key:[...active].sort().join("|"),names,rows,rungs,winnerBottom,path:null,chosen:null};
+}
+function ensureLadder(active){const key=[...active].sort().join("|");if(!ladderState||ladderState.key!==key)buildLadder(active)}
+function ladderEnd(start){
+ let col=start;
+ for(let r=0;r<ladderState.rows;r++){
+   const left=ladderState.rungs.some(x=>x.row===r&&x.col===col-1);
+   const right=ladderState.rungs.some(x=>x.row===r&&x.col===col);
+   if(left)col--;else if(right)col++;
+ }
+ return col;
+}
+function ladderPathPoints(start){
+ const n=ladderState.names.length,w=1000,h=280;
+ const x=c=>n===1?w/2:40+c*(w-80)/(n-1);
+ const y=r=>20+r*(h-40)/ladderState.rows;
+ let col=start,pts=[[x(col),0],[x(col),20]];
+ for(let r=0;r<ladderState.rows;r++){
+   const yy=y(r+0.5);pts.push([x(col),yy]);
+   const left=ladderState.rungs.some(a=>a.row===r&&a.col===col-1);
+   const right=ladderState.rungs.some(a=>a.row===r&&a.col===col);
+   if(left){col--;pts.push([x(col),yy])}else if(right){col++;pts.push([x(col),yy])}
+ }
+ pts.push([x(col),h]);return {points:pts.map(p=>p.join(",")).join(" "),end:col};
+}
+function ladderView(active){
+ ensureLadder(active);
+ const n=ladderState.names.length;
+ if(n===1)return `<div class="randomHint">참가자가 한 명이라 자동 당첨이에요 😊</div><div class="randomResult">🎉 ${esc(active[0])}</div>`;
+ const width=Math.max(760,n*78), cols=`repeat(${n},1fr)`;
+ let lines="",rungs="";
+ const x=c=>n===1?500:40+c*920/(n-1);
+ for(let c=0;c<n;c++)lines+=`<line class="ladderLine" x1="${x(c)}" y1="0" x2="${x(c)}" y2="280"/>`;
+ ladderState.rungs.forEach(a=>{const yy=20+(a.row+.5)*240/ladderState.rows;rungs+=`<line class="ladderRung" x1="${x(a.col)}" y1="${yy}" x2="${x(a.col+1)}" y2="${yy}"/>`});
+ const path=ladderState.path?`<polyline class="ladderPath" points="${ladderState.path}"/>`:"";
+ return `<div class="randomHint">위에서 학생 이름을 눌러 사다리를 타세요. 아래에는 단 하나의 당첨이 숨어 있어요!</div>
+ <div class="ladderScroll"><div class="ladderBoard" style="width:${width}px">
+   <div class="ladderNames" style="grid-template-columns:${cols}">${ladderState.names.map((n,i)=>`<button class="ladderNameBtn" onclick="runLadder(${i})">${esc(n)}</button>`).join("")}</div>
+   <svg class="ladderSvg" viewBox="0 0 1000 280" preserveAspectRatio="none">${lines}${rungs}${path}</svg>
+   <div class="ladderResults" style="grid-template-columns:${cols}">${ladderState.names.map((_,i)=>`<div>${i===ladderState.winnerBottom?'🎉 당첨':'○'}</div>`).join("")}</div>
+ </div></div>`;
+}
+function runLadder(start){
+ if(!ladderState)return;
+ const result=ladderPathPoints(start);ladderState.path=result.points;ladderState.chosen=start;
+ const name=ladderState.names[start];
+ randomMessage=`🪜 ${name} 출발! 사다리를 따라가고 있어요...`;
+ render();
+ setTimeout(()=>{
+   const win=result.end===ladderState.winnerBottom;
+   randomMessage=win?`🎉 ${name} 당첨!`:`🙂 ${name}은(는) 이번엔 통과!`;
+   if(win&&randomExcludePicked)randomExcluded.add(name);
+   const el=document.getElementById("randomResult");if(el)el.textContent=randomMessage;
+ },1200);
+}
 
 /* SETTINGS */
 function settingsView(){
