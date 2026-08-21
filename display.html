@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>난초반 학생용 · V7 FAST</title><style>
+<title>난초반 학생용 · V8 LIVE FIX</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap');
 :root{
  --ink:#32465f; --sub:#6e7f96; --line:#dbe7f1; --shadow:rgba(62,92,136,.14);
@@ -350,8 +350,8 @@ function render(){
      </div>
    </div>
    <div class="clock">
-     <div class="date">${new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"})}</div>
-     <div class="time">${new Date().toLocaleTimeString("ko-KR",{hour12:false})}</div>
+     <div class="date" id="liveDate">${new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"})}</div>
+     <div class="time" id="liveClock">${new Date().toLocaleTimeString("ko-KR",{hour12:false})}</div>
    </div>
  </div>
  <div class="mainlayout">
@@ -375,6 +375,7 @@ function render(){
    </div>
    <div class="page">${pageView(ps,mb)}</div>
  </div>`;
+ requestAnimationFrame(updateLiveElements);
 }
 function navBtn(id,t){return `<button class="${page===id?'on':''}" onclick="page='${id}';render()">${t}</button>`}
 function pageView(ps,mb){
@@ -441,8 +442,8 @@ function activityPage(ps){
      <div>
        <h2>⏱️ 타이머</h2>
        <div class="timerlabel">⏳ ${esc(S.timer.label||"타이머")}</div>
-       <div class="timer">${fmt(S.timer.remaining)}</div>
-       <div class="tstate">${S.timer.running?"진행 중":"대기 중"}</div>
+       <div class="timer" id="liveTimer">${fmt(S.timer.remaining)}</div>
+       <div class="tstate" id="liveTimerState">${S.timer.running?"진행 중":"대기 중"}</div>
      </div>
    </div>
    <div class="card nextwrap">
@@ -497,37 +498,55 @@ function rgLadderView(a){const k=[...a].sort().join("|");if(!rgLadder||rgLadder.
 function rgRun(i){const r=rgLadderPath(i),name=rgLadder.names[i],win=r.end===rgLadder.winnerBottom;rgLadder.path=r.points;rgMessage=win?`🎉 ${name} 당첨!`:`🙂 ${name}은(는) 이번엔 통과!`;if(win&&rgExcludePicked)rgExcluded.add(name);render()}
 
 
-let lastRenderedDateKey="";
-function lightTick(){
- // 전체 화면을 다시 만들지 않고 시계/타이머 숫자만 갱신합니다.
+
+
+
+function updateLiveElements(){
  const now=new Date();
+
  const clock=document.getElementById("liveClock");
- if(clock)clock.textContent=now.toLocaleTimeString("ko-KR",{hour12:false});
+ if(clock){
+   clock.textContent=now.toLocaleTimeString("ko-KR",{
+     hour12:false,
+     hour:"2-digit",
+     minute:"2-digit",
+     second:"2-digit"
+   });
+ }
 
  const date=document.getElementById("liveDate");
- const dateKey=`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
- if(date && lastRenderedDateKey!==dateKey){
-   date.textContent=now.toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
-   lastRenderedDateKey=dateKey;
+ if(date){
+   date.textContent=now.toLocaleDateString("ko-KR",{
+     year:"numeric",month:"long",day:"numeric",weekday:"short"
+   });
  }
 
- if(S?.timer?.running){
-   if(S.timer.endAt){
-     S.timer.remaining=Math.max(0,Math.ceil((Number(S.timer.endAt)-Date.now())/1000));
-   }else if(S.timer.lastTick){
-     const diff=Math.max(0,Math.floor((Date.now()-Number(S.timer.lastTick))/1000));
-     S.timer.remaining=Math.max(0,Number(S.timer.remaining||0)-diff);
-   }
-   if(S.timer.remaining<=0){
-     S.timer.remaining=0;
-     S.timer.running=false;
-   }
- }
+ if(S?.timer){
+   let remain=Number(S.timer.remaining||0);
 
- const timer=document.getElementById("liveTimer");
- if(timer)timer.textContent=fmt(S?.timer?.remaining||0);
- const state=document.getElementById("liveTimerState");
- if(state)state.textContent=S?.timer?.running?"진행 중":"대기 중";
+   if(S.timer.running){
+     if(S.timer.endAt){
+       remain=Math.max(0,Math.ceil((Number(S.timer.endAt)-Date.now())/1000));
+     }else if(S.timer.lastTick){
+       // 구버전 타이머 호환
+       const elapsed=Math.max(0,Math.floor((Date.now()-Number(S.timer.lastTick))/1000));
+       remain=Math.max(0,Number(S.timer.remaining||0)-elapsed);
+     }
+
+     if(remain<=0){
+       remain=0;
+       S.timer.running=false;
+     }
+     // 화면의 메모리 값만 업데이트. Firebase/localStorage에는 매초 쓰지 않음.
+     S.timer.remaining=remain;
+   }
+
+   const timer=document.getElementById("liveTimer");
+   if(timer)timer.textContent=fmt(remain);
+
+   const timerState=document.getElementById("liveTimerState");
+   if(timerState)timerState.textContent=S.timer.running?"진행 중":"대기 중";
+ }
 }
 
 window.addEventListener("storage",()=>{S=load();render()});
@@ -536,8 +555,8 @@ window.addEventListener("nancho-cloud-status",(e)=>{
   console.log(e.detail?.text||"");
 });
 render();
-lightTick();
-interval=setInterval(lightTick,250);
+updateLiveElements();
+interval=setInterval(updateLiveElements,250);
 </script>
 <script>window.NANCHO_FIREBASE_MODE="display";</script>
 <script type="module" src="firebase-bridge.js"></script>
